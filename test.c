@@ -7,8 +7,8 @@
 #include <stdlib.h>
 
 int tests_run = 0;
-int plistSize = 1;
-param pList [] = { { .filename="sample", .nVertex=12 } };
+int pListSize = 3;
+param pList [] = { { .filename="sample", .nVertex=12 },{ .filename="samples/petersen.dot", .nVertex=10 },{ .filename="samples/heawood.dot", .nVertex=14 } };
 
 static char* testGraphLoad(){
 	FILE *fp = fopen(pList[0].filename,"r");
@@ -72,6 +72,16 @@ static char* testNumeroVertices(){
 	return 0;
 }
 
+static char* testNumeroVerticesAllGraphs(){
+	for( int i = 0; i < pListSize; i++){
+		FILE *fp = fopen(pList[i].filename,"r");
+		grafo grf = le_grafo(fp);	
+		mu_assert("Test 8 - Error: Graph vertex number is not the same as input",numero_vertices(grf)==pList[i].nVertex);
+		fclose(fp);
+	}
+	return 0;
+}
+
 static char * all_tests() {
 	mu_run_test(testGraphLoad);
 	mu_run_test(testGraphName);
@@ -80,6 +90,7 @@ static char * all_tests() {
 	mu_run_test(primeiroNoNulo);
 	mu_run_test(primeiroNoNaoNulo);
 	mu_run_test(testNumeroVertices);
+	mu_run_test(testNumeroVerticesAllGraphs);
 	return 0;
 }
 
