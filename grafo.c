@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <graphviz/cgraph.h>
 #include "grafo.h"
 #include <stdio.h>
