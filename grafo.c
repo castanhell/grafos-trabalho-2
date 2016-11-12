@@ -2,10 +2,16 @@
 #include "grafo.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct grafo{
-    char* nome; 
+    char nome[100]; 
 };
+
+struct lista{
+};
+
+// Ref a grafo
 
 grafo inicia_grafo(Agraph_t *g){
     if ( !g ) return NULL;
@@ -14,7 +20,7 @@ grafo inicia_grafo(Agraph_t *g){
 	printf("Impossivel alocar memoria para grafo");
 	return NULL;
     }
-    grf->nome = agnameof(g);
+    strcpy(grf->nome,agnameof(g));
     return grf;
 }
 
@@ -38,4 +44,11 @@ grafo le_grafo(FILE *input){
 
 char *nome_grafo(grafo g){
     return g->nome;   
+}
+
+// Ref a lista
+
+lista constroi_lista(void){
+	lista l = (lista) malloc( sizeof(lista));
+	return l;
 }
