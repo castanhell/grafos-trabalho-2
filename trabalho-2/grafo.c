@@ -9,6 +9,7 @@ struct grafo
     char *nome;
     unsigned int nv;
     unsigned int na;
+    vertice vertices;
 };
 
 struct vertice{
@@ -30,16 +31,30 @@ struct no
 
 // Ref a grafo
 
-void le_nome(Agraph_t *g, grafo graph)
-{
-    int ncpy= strlen(agnameof(g)) < 100 ? strlen(agnameof(g)) : 100;
-    char *nome = malloc(100*sizeof(char));
-    if(nome==NULL)
+char *cpyChar(char * org){
+    char *cpy = malloc(strlen(org)*sizeof(char));
+    if(cpy==NULL)
     {
         return NULL;
     }
-    strncpy(nome,agnameof(g),ncpy);
+    strcpy(cpy,org);
+    return cpy;
+}
+
+void le_nome(Agraph_t *g, grafo graph)
+{
+    char * nome = cpyChar(agnameof(g));
     graph->nome=nome;
+}
+
+void preencheVertices(Agraph_t *g, grafo graph){
+    vertice vertices = malloc( (graph->nv)*sizeof(struct vertice) );
+    int i = 0;
+    for (Agnode_t *v=agfstnode(g); v; v=agnxtnode(g,v))
+    {
+        vertices[i++].nome=cpyChar(agnameof(v));
+    }
+    graph->vertices=vertices;
 }
 
 void le_vertices(Agraph_t *g, grafo graph)
@@ -49,6 +64,7 @@ void le_vertices(Agraph_t *g, grafo graph)
     {
         ++(graph->nv);
     }
+    preencheVertices(g,graph);
 }
 
 void le_arestas(Agraph_t *g, grafo graph)
@@ -111,10 +127,15 @@ unsigned int numero_arestas(grafo g)
 // Ref a vértice
 
 char * nome_vertice(vertice v){
-
+    return v->nome;
 }
 
-char * vertice_nome(char* s, grafo g){
+vertice vertice_nome(char* s, grafo g){
+    for(int i = 0; i < g->nv; i++){
+        if( strcmp( g->vertices[i].nome, s) == 0 ){
+            return (g->vertices) + i;
+        }
+    }
 }
 
 // Ref a lista

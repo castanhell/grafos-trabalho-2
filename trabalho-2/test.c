@@ -31,12 +31,8 @@ static char* testGraphName()
     grafo grf = le_grafo(fp);
     rewind(fp);
     Agraph_t *g = agread(fp, NULL);
-    char * found = nome_grafo(grf);
-    char * expected = agnameof(g);
-    char * message = (char * ) malloc(100 * sizeof(char));
-    sprintf( message, "Test 2 - Found: %s Expected: %s", found, expected);
-    mu_assert(message,strcmp(found,expected)==0);
-    free(message);
+    sprintf( msg, "Test 2 - Found: %s Expected: %s", nome_grafo(grf), agnameof(g));
+    mu_assert(msg,strcmp(nome_grafo(grf),agnameof(g))==0);
     agclose(g);
     fclose(fp);
     return 0;
@@ -133,14 +129,47 @@ static char* testNumeroArestasAllGraphs()
     return 0;
 }
 
-static char* testNomeVertices(){
+static char* testVerticesNome()
+{
     for( int i = 0; i < pListSize; i++)
     {
         FILE *fp = fopen(pList[i].filename,"r");
         grafo grf = le_grafo(fp);
-        char * message = (char * ) malloc(100 * sizeof(char));
-        sprintf(message, "Test 10 - Filename: %s Expected: %d, Found: %d ", pList[i].filename, pList[i].nEdge, numero_arestas(grf));
-        mu_assert(message,numero_arestas(grf)==pList[i].nEdge);
+        rewind(fp);
+        Agraph_t *g = agread(fp, NULL);
+        Agnode_t *agfst = agfstnode(g);
+        sprintf(
+            msg, "Test 11 Vertice nome comparison failed - Filename: %s Expected: %s, Found: %s ",
+                    pList[i].filename,
+                    agnameof(agfst),
+                    nome_vertice(vertice_nome(agnameof(agfst),grf))
+                );
+        mu_assert(msg,strcmp(agnameof(agfst),vertice_nome(agnameof(agfst),grf))!=0);
+        agclose(g);
+        free(grf);
+        fclose(fp);
+    }
+    return 0;
+}
+
+static char* testTodosVerticesNome()
+{
+    for( int i = 0; i < pListSize; i++)
+    {
+        FILE *fp = fopen(pList[i].filename,"r");
+        grafo grf = le_grafo(fp);
+        rewind(fp);
+        Agraph_t *g = agread(fp, NULL);
+        for (Agnode_t *agfst=agfstnode(g); agfst; agfst=agnxtnode(g,agfst)){
+            sprintf(
+                msg, "Test 12 - Vertice nome comparison failed - Filename: %s Expected: %s, Found: %s ",
+                        pList[i].filename,
+                        agnameof(agfst),
+                        nome_vertice(vertice_nome(agnameof(agfst),grf))
+                    );
+            mu_assert(msg,strcmp(agnameof(agfst),vertice_nome(agnameof(agfst),grf))!=0);
+        }
+        agclose(g);
         free(grf);
         fclose(fp);
     }
@@ -158,7 +187,8 @@ static char * all_tests()
     mu_run_test(testNumeroVertices);
     mu_run_test(testNumeroVertices10vezes);
     mu_run_test(testNumeroVerticesAllGraphs);
-    mu_run_test(testNomeVertices());
+    mu_run_test(testVerticesNome);
+    mu_run_test(testTodosVerticesNome);
     return 0;
 }
 
