@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <graphviz/cgraph.h>
-#include "grafo.h" 
+#include "grafo.h"
 #include "minunit.h"
 #include "parameters.h"
 #include <stdio.h>
@@ -8,12 +8,12 @@
 
 int tests_run = 0;
 int pListSize = 3;
-param pList [] = { { .filename="sample", .nVertex=12, .nEdge=15 }, { .filename="samples/petersen.dot", .nVertex=10, .nEdge=10 }, { .filename="samples/heawood.dot", .nVertex=14, .nEdge=14 } }; 
+param pList [] = { { .filename="sample", .nVertex=12, .nEdge=15 }, { .filename="samples/petersen.dot", .nVertex=10, .nEdge=10 }, { .filename="samples/heawood.dot", .nVertex=14, .nEdge=14 } };
 char msg[100];
 
 static char* testGraphLoad(){
 	FILE *fp = fopen(pList[0].filename,"r");
-	grafo grf = le_grafo(fp);	
+	grafo grf = le_grafo(fp);
 	mu_assert("Test 1 - Error: Graph is null",grf!=NULL);
 	fclose(fp);
 	return 0;
@@ -21,7 +21,7 @@ static char* testGraphLoad(){
 
 static char* testGraphName(){
 	FILE *fp = fopen(pList[0].filename,"r");
-	grafo grf = le_grafo(fp);	
+	grafo grf = le_grafo(fp);
 	rewind(fp);
     	Agraph_t *g = agread(fp, NULL);
 	char * found = nome_grafo(grf);
@@ -68,45 +68,61 @@ static char* primeiroNoNaoNulo(){
 
 static char* testNumeroVertices(){
 	FILE *fp = fopen(pList[0].filename,"r");
-	grafo grf = le_grafo(fp);	
+	grafo grf = le_grafo(fp);
 	mu_assert("Test 7 - Error: Graph vertex number is not the same as input",numero_vertices(grf)==pList[0].nVertex);
 	fclose(fp);
 	return 0;
 }
 
 static char* testNumeroVertices10vezes(){
+    FILE *fp = fopen(pList[0].filename,"r");
 	for(int i = 1; i < 11; i++){
-		FILE *fp = fopen(pList[0].filename,"r");
-		grafo grf = le_grafo(fp);	
+		grafo grf = le_grafo(fp);
 		sprintf(msg,"Test 8 - Error: Graph vertex number is not the same as input after %d attempts", i);
 		mu_assert(msg,numero_vertices(grf)==pList[0].nVertex);
+		rewind(fp);
+	}
+	fclose(fp);
+	return 0;
+}
+
+static char* testNumeroVerticesAllGraphs(){
+	for( int i = 0; i < pListSize; i++){
+		FILE *fp = fopen(pList[i].filename,"r");
+		grafo grf = le_grafo(fp);
+		char * message = (char * ) malloc(100 * sizeof(char));
+		sprintf(message, "Test 9 - Filename: %s Expected: %d, Found: %d ", pList[i].filename, pList[i].nVertex,  numero_vertices(grf));
+		mu_assert(message,numero_vertices(grf)==pList[i].nVertex);
+		free(grf);
 		fclose(fp);
 	}
 	return 0;
 }
 
-/*static char* testNumeroVerticesAllGraphs(){
+static char* testNumeroArestasAllGraphs(){
 	for( int i = 0; i < pListSize; i++){
 		FILE *fp = fopen(pList[i].filename,"r");
-		grafo grf = le_grafo(fp);	
+		grafo grf = le_grafo(fp);
 		char * message = (char * ) malloc(100 * sizeof(char));
-		sprintf(message, "Test 8 - Filename: %s Expected: %d, Found: %d ", pList[i].filename, pList[i].nVertex,  numero_vertices(grf));
-		mu_assert(message,12==pList[i].nVertex);
+		sprintf(message, "Test 10 - Filename: %s Expected: %d, Found: %d ", pList[i].filename, pList[i].nEdge,  numero_arestas(grf));
+		mu_assert(message,numero_arestas(grf)==pList[i].nVertex);
 		free(grf);
 		fclose(fp);
 	}
 	return 0;
-}*/
+}
 
 static char * all_tests() {
 	mu_run_test(testGraphLoad);
-	//mu_run_test(testGraphName);
+	mu_run_test(testGraphName);
 	mu_run_test(testCreateEmptyList);
 	mu_run_test(testDestroyEmptyList);
 	mu_run_test(primeiroNoNulo);
 	mu_run_test(primeiroNoNaoNulo);
 	mu_run_test(testNumeroVertices);
 	mu_run_test(testNumeroVertices10vezes);
+	mu_run_test(testNumeroVerticesAllGraphs);
+    mu_run_test(testNumeroArestasAllGraphs);
 	return 0;
 }
 

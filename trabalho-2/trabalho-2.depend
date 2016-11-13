@@ -1,0 +1,51 @@
+# depslib dependency file v1.0
+1479013154 source:/home/lucas/Documentos/grafos/trabalho-2/grafo.c
+	<graphviz/cgraph.h>
+	"grafo.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1478995602 /home/lucas/Documentos/grafos/trabalho-2/grafo.h
+	<stdio.h>
+
+1479013263 source:/home/lucas/Documentos/grafos/trabalho-2/test.c
+	<assert.h>
+	<graphviz/cgraph.h>
+	"grafo.h"
+	"minunit.h"
+	"parameters.h"
+	<stdio.h>
+	<stdlib.h>
+
+1478986604 /home/lucas/Documentos/grafos/trabalho-2/minunit.h
+
+1478995512 /home/lucas/Documentos/grafos/trabalho-2/parameters.h
+
+1479013870 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/main.c
+	<stdio.h>
+	<stdlib.h>
+
+1479017171 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.c
+	<graphviz/cgraph.h>
+	"grafo.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1479014251 /home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.h
+	<stdio.h>
+
+1479016472 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/test.c
+	<assert.h>
+	<graphviz/cgraph.h>
+	"grafo.h"
+	"minunit.h"
+	"parameters.h"
+	<stdio.h>
+	<stdlib.h>
+
+1479014251 /home/lucas/Documentos/grafos/trabalho-2/trabalho-2/minunit.h
+
+1479014251 /home/lucas/Documentos/grafos/trabalho-2/trabalho-2/parameters.h
+

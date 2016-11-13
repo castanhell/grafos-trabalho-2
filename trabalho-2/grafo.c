@@ -5,8 +5,8 @@
 #include <string.h>
 
 struct grafo{
-	char nome[100]; 
-	unsigned int nv;
+    char *nome;
+    unsigned int nv;
 	unsigned int na;
 };
 
@@ -21,6 +21,30 @@ struct no {
 };
 
 // Ref a grafo
+
+void le_nome(Agraph_t *g, grafo graph){
+    int ncpy= strlen(agnameof(g)) < 100 ? strlen(agnameof(g)) : 100;
+    char *nome = malloc(100*sizeof(char));
+    if(nome==NULL){ return NULL; }
+	strncpy(nome,agnameof(g),ncpy);
+	graph->nome=nome;
+}
+
+void le_vertices(Agraph_t *g, grafo graph){
+    graph->nv=0;
+	//inicia vertices
+	for (Agnode_t *v=agfstnode(g); v; v=agnxtnode(g,v)){
+		++(graph->nv);
+	}
+}
+
+void le_arestas(Agraph_t *g, grafo graph){
+    graph->nv=0;
+	//inicia vertices
+	for (Agnode_t *v=agfstnode(g); v; v=agnxtnode(g,v)){
+		++(graph->nv);
+	}
+}
 
 grafo le_grafo(FILE *input){
 	grafo graph = (grafo)malloc(sizeof(grafo));
@@ -37,17 +61,14 @@ grafo le_grafo(FILE *input){
 		printf("Impossivel ler grafo de arquivo\n");
 		return 0;
 	}
-	strcpy(graph->nome,agnameof(g));
-	//inicia vertices
-	for (Agnode_t *v=agfstnode(g); v; v=agnxtnode(g,v)){
-		graph->nv++;
-	}
+    le_nome(g,graph);
+    le_vertices(g,graph);
 	agclose(g);
 	return graph;
-}  
+}
 
 char *nome_grafo(grafo g){
-	return g->nome;   
+	return g->nome;
 }
 
 unsigned int numero_vertices(grafo g){
@@ -71,7 +92,7 @@ lista constroi_lista(void){
 
 int destroi_lista(lista l, int destroi(void *)){
 	free(l);
-	return 1;		
+	return 1;
 }
 
 no primeiro_no(lista l){

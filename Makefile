@@ -1,8 +1,13 @@
 CC=gcc
+CFLAGS+= -g -Wall -std=c99
+LDFLAGS+= 
+LIBS= -l cgraph
 
-all : grafo.c grafo.h
-	$(CC) -g grafo.c test.c -o test -std=c99 -l cgraph
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $^
 
-test: grafo.h grafo.c test.c minunit.h
-	$(CC) -g grafo.c test.c -o test -std=c99 -l cgraph
-	./test 12 sample
+test: grafo.o test.o minunit.h
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+all: grafo.o test.o minunit.h
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
