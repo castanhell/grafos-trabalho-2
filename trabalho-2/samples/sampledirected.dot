@@ -1,0 +1,14 @@
+digraph sample{ 
+	a -> b[peso=2]; 
+	b -> c[peso=2]; 
+	a -> c[peso=2]; 
+	d -> c[peso=2]; 
+	e -> c[peso=2]; 
+	e -> a[peso=2]; 
+	a -> e[peso=2]; 
+	f -> a[peso=2]; 
+	f -> g[peso=2]; 
+	g -> h[peso=2]; 
+	j -> k[peso=2]; 
+	m -> o[peso=2]; 
+}

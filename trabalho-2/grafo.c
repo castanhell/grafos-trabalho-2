@@ -10,11 +10,17 @@ struct grafo
     unsigned int nv;
     unsigned int na;
     vertice vertices;
+    unsigned int direcionado;
+    unsigned int ponderado;
 };
 
-struct vertice{
+struct vertice
+{
+    lista vizinhos;
     char *nome;
     int id;
+    unsigned int grauEntrada;
+    unsigned int grauSaida;
 };
 
 struct lista
@@ -31,7 +37,8 @@ struct no
 
 // Ref a grafo
 
-char *cpyChar(char * org){
+char *cpyChar(char * org)
+{
     char *cpy = malloc(strlen(org)*sizeof(char));
     if(cpy==NULL)
     {
@@ -41,25 +48,52 @@ char *cpyChar(char * org){
     return cpy;
 }
 
+void le_direcionado(Agraph_t *g, grafo graph)
+{
+    if(agisdirected(g))
+    {
+        graph->direcionado=1;
+    }
+    else{
+        graph->direcionado=0;
+    }
+}
+
 void le_nome(Agraph_t *g, grafo graph)
 {
     char * nome = cpyChar(agnameof(g));
     graph->nome=nome;
 }
 
-void preencheVertices(Agraph_t *g, grafo graph){
+void preencheVertices(Agraph_t *g, grafo graph)
+{
     vertice vertices = malloc( (graph->nv)*sizeof(struct vertice) );
     int i = 0;
     for (Agnode_t *v=agfstnode(g); v; v=agnxtnode(g,v))
     {
+        vertices[i].grauEntrada=0;
+        vertices[i].grauSaida=0;
+        for (Agedge_t *a=agfstedge(g,v); a; a=agnxtedge(g,a,v))
+        {
+            if (v == agtail(a))
+            {
+                ++(graph->na);
+                ++vertices[i].grauSaida;
+            }
+            if(v == aghead(a))
+            {
+                ++vertices[i].grauEntrada;
+            }
+        }
         vertices[i++].nome=cpyChar(agnameof(v));
     }
     graph->vertices=vertices;
 }
 
-void le_vertices(Agraph_t *g, grafo graph)
+void le_vertices_arestas(Agraph_t *g, grafo graph)
 {
     graph->nv=0;
+    graph->na=0;
     for (Agnode_t *v=agfstnode(g); v; v=agnxtnode(g,v))
     {
         ++(graph->nv);
@@ -67,25 +101,9 @@ void le_vertices(Agraph_t *g, grafo graph)
     preencheVertices(g,graph);
 }
 
-void le_arestas(Agraph_t *g, grafo graph)
-{
-    graph->na=0;
-    for (Agnode_t *v=agfstnode(g); v; v=agnxtnode(g,v))
-    {
-        for (Agedge_t *a=agfstedge(g,v); a; a=agnxtedge(g,a,v))
-        {
-            if (v == agtail(a))
-            {
-                graph->na++;
-            }
-        }
-    }
-
-}
-
 grafo le_grafo(FILE *input)
 {
-    grafo graph = (grafo)malloc(sizeof(grafo));
+    grafo graph = (grafo)malloc(sizeof(struct grafo));
     if(!graph)
     {
         printf("Impossivel alocar memoria para grafo");
@@ -103,8 +121,8 @@ grafo le_grafo(FILE *input)
         return 0;
     }
     le_nome(g,graph);
-    le_vertices(g,graph);
-    le_arestas(g,graph);
+    le_direcionado(g,graph);
+    le_vertices_arestas(g,graph);
     agclose(g);
     return graph;
 }
@@ -124,33 +142,82 @@ unsigned int numero_arestas(grafo g)
     return g->na;
 }
 
-// Ref a vértice
-
-char * nome_vertice(vertice v){
-    return v->nome;
-}
-
-vertice vertice_nome(char* s, grafo g){
-    for(int i = 0; i < g->nv; i++){
-        if( strcmp( g->vertices[i].nome, s) == 0 ){
-            return (g->vertices) + i;
-        }
-    }
-}
-
-int destroi_vertices(grafo g){
-    for(int i = 0; i < g->nv; i++){
+int destroi_vertices(grafo g)
+{
+    for(int i = 0; i < g->nv; i++)
+    {
         free(g->vertices[i].nome);
     }
     free(g->vertices);
 }
 
-int destroi_grafo(grafo g){
+int destroi_grafo(grafo g)
+{
     destroi_vertices(g);
     free(g->nome);
     free(g);
     g=NULL;
     return 1;
+}
+
+int direcionado(grafo g)
+{
+    return g->direcionado;
+}
+
+int ponderado(grafo g){
+    return 0;
+}
+
+// Ref a vértice
+
+char * nome_vertice(vertice v)
+{
+    return v->nome;
+}
+
+vertice vertice_nome(char* s, grafo g)
+{
+    for(int i = 0; i < g->nv; i++)
+    {
+        if( strcmp( g->vertices[i].nome, s) == 0 )
+        {
+            return (g->vertices) + i;
+        }
+    }
+}
+
+unsigned int grauDirecionado(vertice v, int direcao)
+{
+    if(direcao==-1)
+    {
+        return v->grauEntrada;
+    }
+    if(direcao==0)
+    {
+        return v->grauEntrada+v->grauSaida;
+    }
+    if(direcao==1)
+    {
+        return v->grauSaida;
+    }
+}
+
+unsigned int grauNaoDirecionado(vertice v)
+{
+    return (v->grauEntrada)+(v->grauSaida);
+}
+
+unsigned int grau(vertice v, int direcao, grafo g)
+{
+    if(direcionado(g))
+    {
+        return grauDirecionado(v,direcao);
+    }
+    else
+    {
+        return grauNaoDirecionado(v);
+    }
 }
 
 // Ref a lista
