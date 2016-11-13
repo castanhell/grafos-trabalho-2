@@ -176,6 +176,15 @@ static char* testTodosVerticesNome()
     return 0;
 }
 
+static char* testDestroiGrafo(){
+    FILE *fp = fopen(pList[0].filename,"r");
+    grafo grf = le_grafo(fp);
+    int status = destroi_grafo(grf);
+    mu_assert("Test 8 - Error: Unable to deallocate graph",status==1);
+    fclose(fp);
+    return 0;
+}
+
 static char * all_tests()
 {
     mu_run_test(testGraphLoad);
@@ -189,6 +198,7 @@ static char * all_tests()
     mu_run_test(testNumeroVerticesAllGraphs);
     mu_run_test(testVerticesNome);
     mu_run_test(testTodosVerticesNome);
+    mu_run_test(testDestroiGrafo);
     return 0;
 }
 

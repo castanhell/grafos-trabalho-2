@@ -138,6 +138,21 @@ vertice vertice_nome(char* s, grafo g){
     }
 }
 
+int destroi_vertices(grafo g){
+    for(int i = 0; i < g->nv; i++){
+        free(g->vertices[i].nome);
+    }
+    free(g->vertices);
+}
+
+int destroi_grafo(grafo g){
+    destroi_vertices(g);
+    free(g->nome);
+    free(g);
+    g=NULL;
+    return 1;
+}
+
 // Ref a lista
 
 lista constroi_lista(void)
