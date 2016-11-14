@@ -54,7 +54,8 @@ void le_direcionado(Agraph_t *g, grafo graph)
     {
         graph->direcionado=1;
     }
-    else{
+    else
+    {
         graph->direcionado=0;
     }
 }
@@ -65,27 +66,71 @@ void le_nome(Agraph_t *g, grafo graph)
     graph->nome=nome;
 }
 
+int estado_ponderado_valido(int ponderado){
+    return ponderado == 0 || ponderado == 1;
+}
+
+void insere_ponderado(grafo graph, int ponderado)
+{
+    if(estado_ponderado_valido(graph->ponderado) && ponderado!=graph->ponderado){
+        graph->ponderado=0;
+    }
+    else
+    {
+        graph->ponderado=ponderado;
+    }
+}
+
+void inicia_vertice(vertice vertice)
+{
+    vertice->grauEntrada=0;
+    vertice->grauSaida=0;
+}
+
+void insere_pesos(Agraph_t *g, grafo graph, Agedge_t *a, Agnode_t *v)
+{
+    char *peso = agget(a, (char *)"peso");
+    if(peso==NULL || strlen(peso)==0)
+    {
+        insere_ponderado(graph,0);
+    }
+    else
+    {
+        insere_ponderado(graph,1);
+    }
+}
+
+void insere_graus_vertices(vertice vertice, grafo graph, Agedge_t *a, Agnode_t *v)
+{
+    if (v == agtail(a))
+    {
+        ++(graph->na);
+        ++(vertice->grauSaida);
+    }
+    if(v == aghead(a))
+    {
+        ++(vertice->grauEntrada);
+    }
+}
+
+void insere_nome_vertice(vertice vertice, char*nome){
+    vertice->nome=cpyChar(nome);
+}
+
 void preencheVertices(Agraph_t *g, grafo graph)
 {
     vertice vertices = malloc( (graph->nv)*sizeof(struct vertice) );
     int i = 0;
     for (Agnode_t *v=agfstnode(g); v; v=agnxtnode(g,v))
     {
-        vertices[i].grauEntrada=0;
-        vertices[i].grauSaida=0;
+        inicia_vertice(vertices + i );
         for (Agedge_t *a=agfstedge(g,v); a; a=agnxtedge(g,a,v))
         {
-            if (v == agtail(a))
-            {
-                ++(graph->na);
-                ++vertices[i].grauSaida;
-            }
-            if(v == aghead(a))
-            {
-                ++vertices[i].grauEntrada;
-            }
+            insere_pesos(g,graph,a,v);
+            insere_graus_vertices(vertices+i,graph,a,v);
         }
-        vertices[i++].nome=cpyChar(agnameof(v));
+        insere_nome_vertice(vertices+i,agnameof(v));
+        i++;
     }
     graph->vertices=vertices;
 }
@@ -99,6 +144,14 @@ void le_vertices_arestas(Agraph_t *g, grafo graph)
         ++(graph->nv);
     }
     preencheVertices(g,graph);
+}
+
+/*
+Inicia variáveis que iniciam de 0 a 1 como 2, ou seja, um valor não válido
+*/
+void inicia_grafo(grafo graph){
+    graph->direcionado=2;
+    graph->ponderado= 2;
 }
 
 grafo le_grafo(FILE *input)
@@ -120,6 +173,7 @@ grafo le_grafo(FILE *input)
         printf("Impossivel ler grafo de arquivo\n");
         return 0;
     }
+    inicia_grafo(graph);
     le_nome(g,graph);
     le_direcionado(g,graph);
     le_vertices_arestas(g,graph);
@@ -165,8 +219,9 @@ int direcionado(grafo g)
     return g->direcionado;
 }
 
-int ponderado(grafo g){
-    return 0;
+int ponderado(grafo g)
+{
+    return g->ponderado;
 }
 
 // Ref a vértice

@@ -12,9 +12,10 @@ int pListSize = 4;
 param pList [] =
 {
     { .filename="sample", .nVertex=12, .nEdge=12, .directed=0, .weighted=1 },
-    { .filename="samples/petersen.dot", .nVertex=10, .nEdge=15, .directed=0, .weighted=1 },
-    { .filename="samples/heawood.dot", .nVertex=14, .nEdge=21, .directed=0, .weighted=1 },
-    { .filename="samples/sampledirected.dot", .nVertex=12, .nEdge=12, .directed=1, .weighted=1 }
+    { .filename="samples/petersen.dot", .nVertex=10, .nEdge=15, .directed=0, .weighted=0 },
+    { .filename="samples/heawood.dot", .nVertex=14, .nEdge=21, .directed=0, .weighted=0 },
+    { .filename="samples/sampledirected.dot", .nVertex=12, .nEdge=12, .directed=1, .weighted=1 },
+    { .filename="samples/samplepartialweighted.dot", .nVertex=12, .nEdge=12, .directed=1, .weighted=0 }
 };
 
 static char* testGraphLoad()
@@ -334,6 +335,19 @@ static char* testPonderadoNaoPonderado()
     return 0;
 }
 
+static char* testPonderadoIncompleto()
+{
+    FILE *fp = fopen(pList[4].filename,"r");
+    grafo grf = le_grafo(fp);
+    sprintf(msg,"Test 18 - Weighted expected: %d Weighted found: %d for file: %s",
+            pList[4].weighted, ponderado(grf),
+            pList[4].filename
+           );
+    mu_assert(msg, ponderado(grf) == pList[4].weighted );
+    fclose(fp);
+    return 0;
+}
+
 static char * all_tests()
 {
     mu_run_test(testGraphLoad);
@@ -353,6 +367,7 @@ static char * all_tests()
     mu_run_test(testGrauPrimeiroVerticeEntradaSaidaDirecionado);
     mu_run_test(testDirecionadoNaoDirecionado);
     mu_run_test(testPonderadoNaoPonderado);
+    mu_run_test(testPonderadoIncompleto);
     return 0;
 }
 
