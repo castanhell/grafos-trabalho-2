@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 struct grafo
 {
     char *nome;
@@ -16,11 +15,18 @@ struct grafo
 
 struct vertice
 {
-    lista vizinhos;
+    vertice* vizinhos;
     char *nome;
     int id;
     unsigned int grauEntrada;
     unsigned int grauSaida;
+};
+
+struct aresta
+{
+    vertice origem;
+    vertice destino;
+    int peso;
 };
 
 struct lista
@@ -66,13 +72,15 @@ void le_nome(Agraph_t *g, grafo graph)
     graph->nome=nome;
 }
 
-int estado_ponderado_valido(int ponderado){
+int estado_ponderado_valido(int ponderado)
+{
     return ponderado == 0 || ponderado == 1;
 }
 
 void insere_ponderado(grafo graph, int ponderado)
 {
-    if(estado_ponderado_valido(graph->ponderado) && ponderado!=graph->ponderado){
+    if(estado_ponderado_valido(graph->ponderado) && ponderado!=graph->ponderado)
+    {
         graph->ponderado=0;
     }
     else
@@ -113,7 +121,8 @@ void insere_graus_vertices(vertice vertice, grafo graph, Agedge_t *a, Agnode_t *
     }
 }
 
-void insere_nome_vertice(vertice vertice, char*nome){
+void insere_nome_vertice(vertice vertice, char*nome)
+{
     vertice->nome=cpyChar(nome);
 }
 
@@ -135,6 +144,28 @@ void preencheVertices(Agraph_t *g, grafo graph)
     graph->vertices=vertices;
 }
 
+void preenche_vizinhos_vertice(Agraph_t *g, grafo graph)
+{
+    for (Agnode_t *v=agfstnode(g); v; v=agnxtnode(g,v))
+    {
+        vertice vv = vertice_nome(agnameof(v),graph);
+        int gvv = grau(vv,0,g);
+        vertice * vzv = malloc( sizeof(vertice) * gvv );
+        int i = 0;
+        for (Agedge_t *a=agfstedge(g,v); a; a=agnxtedge(g,a,v))
+        {
+            if(v == aghead(a)){
+                vzv[i] = vertice_nome(agnameof(agtail(a)),graph);
+            }
+            if (v == agtail(a)){
+                vzv[i] = vertice_nome(agnameof(aghead(a)),graph);
+            }
+            ++i;
+        }
+        vv->vizinhos=vzv;
+    }
+}
+
 void le_vertices_arestas(Agraph_t *g, grafo graph)
 {
     graph->nv=0;
@@ -144,12 +175,14 @@ void le_vertices_arestas(Agraph_t *g, grafo graph)
         ++(graph->nv);
     }
     preencheVertices(g,graph);
+    preenche_vizinhos_vertice(g,graph);
 }
 
 /*
 Inicia variáveis que iniciam de 0 a 1 como 2, ou seja, um valor não válido
 */
-void inicia_grafo(grafo graph){
+void inicia_grafo(grafo graph)
+{
     graph->direcionado=2;
     graph->ponderado= 2;
 }
@@ -297,4 +330,30 @@ int destroi_lista(lista l, int destroi(void *))
 no primeiro_no(lista l)
 {
     return l->primeiroNo;
+}
+
+/*
+Retorna os vizinhos de um dado vertice
+*/
+vertice * vizinhos(vertice v)
+{
+    return NULL;
+}
+
+/*
+Retorna 1 se v1 é vizinho de v2 ou NULL, caso contrário
+*/
+int vizinho(vertice v1, vertice v2)
+{
+    for(int i = 0; i < v1->grauEntrada+v1->grauSaida; i++){
+        if( v1->vizinhos[i] == v2 ){
+            return 1;
+        }
+    }
+     for(int i = 0; i < v2->grauEntrada+v2->grauSaida; i++){
+        if( v2->vizinhos[i] == v1 ){
+            return 1;
+        }
+    }
+    return 0;
 }

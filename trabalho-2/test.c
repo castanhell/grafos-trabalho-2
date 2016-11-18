@@ -1,3 +1,4 @@
+#define TESTE
 #include <assert.h>
 #include <graphviz/cgraph.h>
 #include "grafo.h"
@@ -348,6 +349,36 @@ static char* testPonderadoIncompleto()
     return 0;
 }
 
+static char* testTodasArestasPrimeiroVerticeNaoDirecionado()
+{
+    for( int i = 0; i < pListSize; i++)
+    {
+        FILE *fp = fopen(pList[i].filename,"r");
+        grafo grf = le_grafo(fp);
+        if(!direcionado(grf))
+        {
+            rewind(fp);
+            Agraph_t *g = agread(fp, NULL);
+            Agnode_t *agfst = agfstnode(g);
+            for (Agedge_t *a=agfstedge(g,agfst); a; a=agnxtedge(g,a,agfst))
+            {
+                vertice v1=vertice_nome(agnameof(aghead(a)),grf),
+                v2=vertice_nome(agnameof(agtail(a)),grf);
+                sprintf(msg,"Test 19 - vertexes %s and %s expected to be neighboors. Filename: %s",
+                        nome_vertice(v1),
+                        nome_vertice(v2),
+                        pList[i].filename
+                       );
+                mu_assert(msg,vizinho(v1,v2)==1);
+            }
+            agclose(g);
+        }
+        destroi_grafo(grf);
+        fclose(fp);
+    }
+    return 0;
+}
+
 static char * all_tests()
 {
     mu_run_test(testGraphLoad);
@@ -368,6 +399,7 @@ static char * all_tests()
     mu_run_test(testDirecionadoNaoDirecionado);
     mu_run_test(testPonderadoNaoPonderado);
     mu_run_test(testPonderadoIncompleto);
+    mu_run_test(testTodasArestasPrimeiroVerticeNaoDirecionado);
     return 0;
 }
 

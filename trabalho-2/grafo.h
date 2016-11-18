@@ -34,7 +34,7 @@ no proximo_no(no n);
 
 //------------------------------------------------------------------------------
 // devolve o conteúdo do nó n
-//      ou NULL se n == NULL 
+//      ou NULL se n == NULL
 
 void *conteudo(no n);
 
@@ -47,12 +47,12 @@ lista constroi_lista(void);
 
 //------------------------------------------------------------------------------
 // desaloca a lista l e todos os seus nós
-// 
+//
 // se destroi != NULL invoca
 //
-//     destroi(conteudo(n)) 
+//     destroi(conteudo(n))
 //
-// para cada nó n da lista. 
+// para cada nó n da lista.
 //
 // devolve 1 em caso de sucesso,
 //      ou 0 em caso de falha
@@ -61,15 +61,15 @@ int destroi_lista(lista l, int destroi(void *));
 
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados para representar um grafo
-// 
+//
 // o grafo pode ser
 // - direcionado ou não
 // - com pesos nas arestas/arcos ou não
-// 
+//
 // além dos vértices e arestas, o grafo tem um nome, que é uma "string"
-// 
+//
 // num grafo com pesos todas as arestas/arcos tem peso, que é um long int
-// 
+//
 // o peso default é 0
 
 typedef struct grafo *grafo;
@@ -103,7 +103,7 @@ unsigned int numero_arestas(grafo g);
 
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados que representa um vértice do grafo
-// 
+//
 // cada vértice tem um nome que é uma "string"
 
 typedef struct vertice *vertice;
@@ -121,26 +121,26 @@ vertice vertice_nome(char *s, grafo g);
 
 //------------------------------------------------------------------------------
 // lê um grafo no formato dot de input, usando as rotinas de libcgraph
-// 
+//
 // desconsidera todos os atributos do grafo lido exceto o atributo
 // "peso" quando ocorrer; neste caso o valor do atributo é o peso da
 // aresta/arco que é um long int
-// 
+//
 // num grafo com pesos todas as arestas/arcos tem peso
-// 
+//
 // o peso default é 0
-// 
+//
 // todas as estruturas de dados alocadas pela libcgraph são
 // desalocadas ao final da execução
-// 
+//
 // devolve o grafo lido
-//      ou NULL em caso de erro 
+//      ou NULL em caso de erro
 
-grafo le_grafo(FILE *input);  
+grafo le_grafo(FILE *input);
 
 //------------------------------------------------------------------------------
 // desaloca toda a memória usada em *g
-// 
+//
 // devolve 1 em caso de sucesso,
 //      ou 0 caso contrário
 
@@ -148,12 +148,12 @@ int destroi_grafo(grafo g);
 
 //------------------------------------------------------------------------------
 // escreve o grafo g em output usando o formato dot.
-// 
-// o peso das arestas/arcos (quando houver) é escrito como o atributo 
+//
+// o peso das arestas/arcos (quando houver) é escrito como o atributo
 // de nome "peso"
 //
 // devolve o grafo escrito
-//      ou NULL em caso de erro 
+//      ou NULL em caso de erro
 
 grafo escreve_grafo(FILE *output, grafo g);
 
@@ -167,7 +167,7 @@ unsigned int grau(vertice v, int direcao, grafo g);
 //------------------------------------------------------------------------------
 // devolve uma lista de vértices de g representando o caminho mínimo
 // de u a v em g
-// 
+//
 // a lista é vazia se u e v estão em componentes diferentes de g
 
 lista caminho_minimo(vertice u, vertice v, grafo g);
@@ -179,7 +179,7 @@ long int distancia(vertice u, vertice v, grafo g);
 
 //------------------------------------------------------------------------------
 // devolve um número entre 0 e numero_vertices(g)
-// 
+//
 // este número é único e distinto para cada vértice de g e deve servir
 // para indexar vetores e matrizes a partir dos vértices de g
 
@@ -196,7 +196,7 @@ long int **distancias(unsigned int **d, grafo g);
 
 //------------------------------------------------------------------------------
 // preenche a matriz c com caminhos mínimos entre os vértices de g de
-// maneira que c[indice(u,g)][indice(v,g)] tenha um caminho mínimo 
+// maneira que c[indice(u,g)][indice(v,g)] tenha um caminho mínimo
 // entre os vértices u e v em g
 //
 // devolve d
@@ -209,3 +209,12 @@ lista **caminhos_minimos(lista **c, grafo g);
 long int diametro(grafo g);
 
 #endif
+
+#ifdef TESTE
+
+vertice * vizinhos(vertice v);
+int vizinho(vertice v1, vertice v2);
+
+#endif
+
+
