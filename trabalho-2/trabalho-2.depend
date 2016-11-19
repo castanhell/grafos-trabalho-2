@@ -26,17 +26,17 @@
 	<stdio.h>
 	<stdlib.h>
 
-1479464573 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.c
+1479595287 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.c
 	<graphviz/cgraph.h>
 	"grafo.h"
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 
-1479437293 /home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.h
+1479581122 /home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.h
 	<stdio.h>
 
-1479440186 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/test.c
+1479595601 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/test.c
 	<assert.h>
 	<graphviz/cgraph.h>
 	"grafo.h"

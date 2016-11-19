@@ -363,7 +363,7 @@ static char* testTodasArestasPrimeiroVerticeNaoDirecionado()
             for (Agedge_t *a=agfstedge(g,agfst); a; a=agnxtedge(g,a,agfst))
             {
                 vertice v1=vertice_nome(agnameof(aghead(a)),grf),
-                v2=vertice_nome(agnameof(agtail(a)),grf);
+                        v2=vertice_nome(agnameof(agtail(a)),grf);
                 sprintf(msg,"Test 19 - vertexes %s and %s expected to be neighboors. Filename: %s",
                         nome_vertice(v1),
                         nome_vertice(v2),
@@ -378,6 +378,41 @@ static char* testTodasArestasPrimeiroVerticeNaoDirecionado()
     }
     return 0;
 }
+
+static char* test_adiciona_lista()
+{
+    lista l = constroi_lista();
+    adiciona_lista(l,1);
+    adiciona_lista(l,2);
+    adiciona_lista(l,3);
+    sprintf(msg,"Teste 20 :Tamanho da list esperado : 3, encontrado: %d", tamanho_lista(l));
+    mu_assert(msg,3==tamanho_lista(l));
+    return 0;
+}
+
+static char* test_primeiro_no()
+{
+    lista l = constroi_lista();
+    adiciona_lista(l,1);
+    adiciona_lista(l,2);
+    adiciona_lista(l,3);
+    adiciona_lista(l,4);
+    adiciona_lista(l,5);
+    sprintf(msg,"Teste 21 :Primeiro vertice esperado : 1, encontrado: %d", (int)conteudo(primeiro_no(l)));
+    mu_assert(msg,1==(int)conteudo(primeiro_no(l)));
+    no n = primeiro_no(l);
+    for(int i = 1; i < 5; i++){
+        int encontrado = 0;
+        if(proximo_no(n)){
+            encontrado = conteudo(proximo_no(n));
+        }
+        sprintf(msg,"Teste 21: Proximo no esperado : 1, encontrado: %d", i+1, encontrado );
+        mu_assert(msg,i+1==encontrado);
+        n = proximo_no(n);
+    }
+    return 0;
+}
+
 
 static char * all_tests()
 {
@@ -400,6 +435,8 @@ static char * all_tests()
     mu_run_test(testPonderadoNaoPonderado);
     mu_run_test(testPonderadoIncompleto);
     mu_run_test(testTodasArestasPrimeiroVerticeNaoDirecionado);
+    mu_run_test(test_adiciona_lista);
+    mu_run_test(test_primeiro_no);
     return 0;
 }
 

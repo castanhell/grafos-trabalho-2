@@ -214,6 +214,7 @@ long int diametro(grafo g);
 
 vertice * vizinhos(vertice v);
 int vizinho(vertice v1, vertice v2);
+int adiciona_lista(lista l, void *conteudo);
 
 #endif
 

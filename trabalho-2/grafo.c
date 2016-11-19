@@ -33,6 +33,7 @@ struct lista
 {
     int nNos;
     no primeiroNo;
+    no ultimoNo;
 };
 
 struct no
@@ -41,9 +42,73 @@ struct no
     void *conteudo;
 };
 
+// Ref a lista
+
+lista constroi_lista(void)
+{
+    lista l = (lista) malloc( sizeof(lista) );
+    if (l == NULL)
+    {
+        printf("Unable to allocate memory\n");
+    }
+    l->primeiroNo=NULL;
+    l->ultimoNo=NULL;
+    l->nNos=0;
+    return l;
+}
+
+int destroi_lista(lista l, int destroi(void *))
+{
+    free(l);
+    return 1;
+}
+
+no primeiro_no(lista l)
+{
+    return l->primeiroNo;
+}
+
+no proximo_no(no n)
+{
+    return n->proximo;
+}
+
+int adiciona_lista(lista l, void* conteudo)
+{
+    no n = (no) malloc(sizeof(struct no) );
+    n->proximo=NULL;
+    n->conteudo=conteudo;
+    if(!l)
+    {
+        return 0;
+    }
+
+    if(l->ultimoNo)
+    {
+        l->ultimoNo->proximo=n;
+        l->ultimoNo=n;
+    }
+    else
+    {
+        l->primeiroNo=n;
+        l->ultimoNo=n;
+    }
+    (l->nNos)++;
+    return 1;
+}
+
+unsigned int tamanho_lista(lista l)
+{
+    return l->nNos;
+}
+
+void * conteudo(no n){
+    return n->conteudo;
+}
+
 // Ref a grafo
 
-char *cpyChar(char * org)
+char *cpy_char(char * org)
 {
     char *cpy = malloc(strlen(org)*sizeof(char));
     if(cpy==NULL)
@@ -68,7 +133,7 @@ void le_direcionado(Agraph_t *g, grafo graph)
 
 void le_nome(Agraph_t *g, grafo graph)
 {
-    char * nome = cpyChar(agnameof(g));
+    char * nome = cpy_char(agnameof(g));
     graph->nome=nome;
 }
 
@@ -123,7 +188,7 @@ void insere_graus_vertices(vertice vertice, grafo graph, Agedge_t *a, Agnode_t *
 
 void insere_nome_vertice(vertice vertice, char*nome)
 {
-    vertice->nome=cpyChar(nome);
+    vertice->nome=cpy_char(nome);
 }
 
 void preencheVertices(Agraph_t *g, grafo graph)
@@ -154,10 +219,12 @@ void preenche_vizinhos_vertice(Agraph_t *g, grafo graph)
         int i = 0;
         for (Agedge_t *a=agfstedge(g,v); a; a=agnxtedge(g,a,v))
         {
-            if(v == aghead(a)){
+            if(v == aghead(a))
+            {
                 vzv[i] = vertice_nome(agnameof(agtail(a)),graph);
             }
-            if (v == agtail(a)){
+            if (v == agtail(a))
+            {
                 vzv[i] = vertice_nome(agnameof(aghead(a)),graph);
             }
             ++i;
@@ -308,30 +375,6 @@ unsigned int grau(vertice v, int direcao, grafo g)
     }
 }
 
-// Ref a lista
-
-lista constroi_lista(void)
-{
-    lista l = (lista) malloc( sizeof(lista) );
-    if (l == NULL)
-    {
-        printf("Unable to allocate memory\n");
-    }
-    l->primeiroNo=NULL;
-    return l;
-}
-
-int destroi_lista(lista l, int destroi(void *))
-{
-    free(l);
-    return 1;
-}
-
-no primeiro_no(lista l)
-{
-    return l->primeiroNo;
-}
-
 /*
 Retorna os vizinhos de um dado vertice
 */
@@ -345,13 +388,17 @@ Retorna 1 se v1 é vizinho de v2 ou NULL, caso contrário
 */
 int vizinho(vertice v1, vertice v2)
 {
-    for(int i = 0; i < v1->grauEntrada+v1->grauSaida; i++){
-        if( v1->vizinhos[i] == v2 ){
+    for(int i = 0; i < v1->grauEntrada+v1->grauSaida; i++)
+    {
+        if( v1->vizinhos[i] == v2 )
+        {
             return 1;
         }
     }
-     for(int i = 0; i < v2->grauEntrada+v2->grauSaida; i++){
-        if( v2->vizinhos[i] == v1 ){
+    for(int i = 0; i < v2->grauEntrada+v2->grauSaida; i++)
+    {
+        if( v2->vizinhos[i] == v1 )
+        {
             return 1;
         }
     }
