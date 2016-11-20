@@ -1,0 +1,12 @@
+graph dijkstrapequeno{ 
+	a -- b; 
+	b -- c; 
+    c -- d;
+    d -- e;
+    e -- f;
+	a1 -- b1; 
+	b1 -- c1; 
+    c1 -- d1;
+    d1 -- e1;
+    e1 -- f1;
+}

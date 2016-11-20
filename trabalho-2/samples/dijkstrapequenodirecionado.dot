@@ -1,4 +1,4 @@
-graph dijkstrapequeno{ 
+digraph dijkstrapequeno{ 
 	a -> b; 
 	b -> c; 
     c -> d;

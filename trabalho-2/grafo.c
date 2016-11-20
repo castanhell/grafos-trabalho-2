@@ -45,7 +45,8 @@ struct no
     void *conteudo;
 };
 
-typedef struct veio_de{
+typedef struct veio_de
+{
     vertice v;
     int id_vertice_veio_de;
     long int distancia;
@@ -69,10 +70,20 @@ lista constroi_lista(void)
 
 int destroi_lista(lista l, int destroi(void *))
 {
-    if(l == NULL){
+    if(l == NULL)
+    {
         return 0;
     }
-    else{
+    else
+    {
+        no p = primeiro_no(l);
+        while(p != NULL)
+        {
+            no cpy = p;
+            p = proximo_no(p);
+            void *vp = conteudo(cpy);
+            destroi(&vp);
+        }
         free(l);
         return 1;
     }
@@ -119,10 +130,12 @@ unsigned int tamanho_lista(lista l)
 
 void * conteudo(no n)
 {
-    if(n){
+    if(n)
+    {
         return n->conteudo;
     }
-    else{
+    else
+    {
         return NULL;
     }
 }
@@ -257,6 +270,7 @@ void preenche_vizinhos_vertice(Agraph_t *g, grafo graph)
         for (Agedge_t *a=agfstedge(g,v); a; a=agnxtedge(g,a,v))
         {
             aresta * ar = malloc(sizeof(struct aresta));
+
             if(v == aghead(a))
             {
                 vertice v2 = vertice_nome(agnameof(agtail(a)),graph);
@@ -264,31 +278,40 @@ void preenche_vizinhos_vertice(Agraph_t *g, grafo graph)
                 ar->destino=v1;
                 if(direcionado(graph))
                 {
-                    insere_aresta_vertice(v1,ar);
+                    insere_aresta_vertice(v2,ar);
                 }
                 if(!direcionado(graph))
                 {
+                    aresta * arcpy = malloc(sizeof(struct aresta));
+                    arcpy->origem = ar->origem;
+                    arcpy->destino=ar->destino;
+                    arcpy->peso=ar->peso;
                     insere_aresta_vertice(v1,ar);
-                    insere_aresta_vertice(v2,ar);
+                    insere_aresta_vertice(v2,arcpy);
+                    insere_pesos(g,graph,a,v,arcpy);
                 }
             }
             if (v == agtail(a))
             {
                 vertice v2 = vertice_nome(agnameof(aghead(a)),graph);
-                ar->origem=v2;
-                ar->destino=v1;
+                ar->origem=v1;
+                ar->destino=v2;
                 if(direcionado(graph))
                 {
-                    insere_aresta_vertice(v2,ar);
+                    insere_aresta_vertice(v1,ar);
                 }
                 if(!direcionado(graph))
                 {
+                    aresta * arcpy = malloc(sizeof(struct aresta));
+                    arcpy->origem = ar->origem;
+                    arcpy->destino=ar->destino;
+                    arcpy->peso=ar->peso;
                     insere_aresta_vertice(v1,ar);
-                    insere_aresta_vertice(v2,ar);
+                    insere_aresta_vertice(v2,arcpy);
+                    insere_pesos(g,graph,a,v,arcpy);
                 }
             }
             insere_pesos(g,graph,a,v,ar);
-
             ++i;
         }
     }
@@ -357,7 +380,7 @@ unsigned int numero_arestas(grafo g)
     return g->na;
 }
 
-int destroi_aresta(aresta * ar)
+int destroi_aresta(aresta ** ar)
 {
     if(ar == NULL)
     {
@@ -365,7 +388,7 @@ int destroi_aresta(aresta * ar)
     }
     else
     {
-        free(ar);
+        free(*ar);
         return 1;
     }
 }
@@ -417,6 +440,11 @@ vertice vertice_nome(char* s, grafo g)
     }
 }
 
+vertice vertice_id(int id, grafo grf)
+{
+    return grf->vertices+id;
+}
+
 unsigned int grauDirecionado(vertice v, int direcao)
 {
     if(direcao==-1)
@@ -450,7 +478,8 @@ unsigned int grau(vertice v, int direcao, grafo g)
     }
 }
 
-unsigned int indice(vertice v, grafo g){
+unsigned int indice(vertice v, grafo g)
+{
     return v->id;
 }
 
@@ -495,11 +524,14 @@ int vizinho_peso(vertice v1, vertice v2)
     return 0;
 }
 
-int encontra_menor_id_distancia(veio_de* veio_de,grafo g){
+int encontra_menor_id_distancia(veio_de* veio_de,grafo g)
+{
     int id_de = -1;
     long int menor_dist = infinito;
-    for(int i = 0; i < numero_vertices(g); i++){
-        if(!veio_de[i].processado && veio_de[i].distancia <= menor_dist){
+    for(int i = 0; i < numero_vertices(g); i++)
+    {
+        if(!veio_de[i].processado && veio_de[i].distancia <= menor_dist)
+        {
             id_de = i;
             menor_dist=veio_de[i].distancia;
         }
@@ -507,19 +539,24 @@ int encontra_menor_id_distancia(veio_de* veio_de,grafo g){
     return id_de;
 }
 
-vertice vertice_vizinho(vertice v, aresta* ar){
-    if(ar->origem==v){
+vertice vertice_vizinho(vertice v, aresta* ar)
+{
+    if(ar->origem==v)
+    {
         return ar->destino;
     }
-    if(ar->destino==v){
+    if(ar->destino==v)
+    {
         return ar->origem;
     }
 }
 
 /* Algoritmos de distancia */
-void constroi_veio_de_dijkstra(veio_de * veio_de, vertice origem, grafo g){
+void constroi_veio_de_dijkstra(veio_de * veio_de, vertice origem, grafo g)
+{
     //Inicia vertices
-    for(int i = 0; i < numero_vertices(g); i++){
+    for(int i = 0; i < numero_vertices(g); i++)
+    {
         veio_de[i].v=g->vertices+i;
         veio_de[i].distancia=infinito;
         veio_de[i].id_vertice_veio_de=-1;
@@ -528,19 +565,26 @@ void constroi_veio_de_dijkstra(veio_de * veio_de, vertice origem, grafo g){
     veio_de[origem->id].distancia = 0;
     //Executa o algoritmo
     int processados = 0;
-    while(processados < numero_vertices(g)){
+    while(processados < numero_vertices(g))
+    {
         int id_menor = encontra_menor_id_distancia(veio_de,g);
         vertice menor = g->vertices + id_menor;
         //para cada vertice adjacente ao menor
-        no no_aresta = menor->arestas->primeiroNo;
-        while(no_aresta != NULL){
-            aresta *ar = conteudo(no_aresta);
-            vertice vizinho = vertice_vizinho(menor,ar);
-            if(veio_de[vizinho->id].distancia > veio_de[menor->id].distancia + ar->peso  ){
-                veio_de[vizinho->id].distancia = veio_de[menor->id].distancia + ar->peso;
-                veio_de[vizinho->id].id_vertice_veio_de = menor->id;
+        lista arestas = menor->arestas;
+        if(arestas)
+        {
+            no no_aresta = primeiro_no(arestas);
+            while(no_aresta != NULL)
+            {
+                aresta *ar = conteudo(no_aresta);
+                vertice vizinho = vertice_vizinho(menor,ar);
+                if(veio_de[vizinho->id].distancia > veio_de[menor->id].distancia + ar->peso  )
+                {
+                    veio_de[vizinho->id].distancia = veio_de[menor->id].distancia + ar->peso;
+                    veio_de[vizinho->id].id_vertice_veio_de = menor->id;
+                }
+                no_aresta = no_aresta->proximo;
             }
-            no_aresta = no_aresta->proximo;
         }
         //processamos o menor
         veio_de[id_menor].processado=1;
@@ -550,26 +594,40 @@ void constroi_veio_de_dijkstra(veio_de * veio_de, vertice origem, grafo g){
     return veio_de;
 }
 
-int destroi_veio_de(veio_de **vd){
+int destroi_veio_de(veio_de **vd)
+{
     free(*vd);
     return 1;
 }
 
-lista caminho_minimo(vertice u, vertice v, grafo g){
+veio_de* veio_de_id(veio_de* referencia, int id){
+    return referencia + id;
+}
+
+lista caminho_minimo(vertice u, vertice v, grafo g)
+{
     veio_de *vd = malloc(sizeof(veio_de) * g->nv);
     constroi_veio_de_dijkstra(vd,u,g);
+    veio_de *vertice_destino = veio_de_id(vd,indice(v,g));
     lista l = constroi_lista();
-    veio_de *vertice_destino = vd + indice(v,g);
-    while(vertice_destino->v != u){
-        adiciona_lista(l,g->vertices + vertice_destino->id_vertice_veio_de);
+    while(vertice_destino->v != u)
+    {
+        if(vertice_destino->id_vertice_veio_de == -1){
+            free(l);
+            l=NULL;
+            break;
+        }
+        adiciona_lista(l,vertice_id(vertice_destino->id_vertice_veio_de,g));
         //pula para o qual veio
-        vertice_destino = vd + vertice_destino->id_vertice_veio_de;
+        vertice_destino = veio_de_id(vd,vertice_destino->id_vertice_veio_de);
     }
+    adiciona_lista(l,u);
     destroi_veio_de(&vd);
     return l;
 }
 
-long int distancia(vertice u, vertice v, grafo g){
+long int distancia(vertice u, vertice v, grafo g)
+{
     veio_de *vd = malloc(sizeof(veio_de) * g->nv);
     constroi_veio_de_dijkstra(vd,u,g);
     int valor = (vd + indice(v,g))->distancia;
@@ -577,3 +635,6 @@ long int distancia(vertice u, vertice v, grafo g){
     return valor;
 }
 
+long int **distancias(unsigned int **d, grafo g){
+
+}
