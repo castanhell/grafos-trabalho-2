@@ -9,14 +9,15 @@
 
 char msg[100];
 int tests_run = 0;
-int pListSize = 4;
+int pListSize = 6;
 param pList [] =
 {
     { .filename="sample", .nVertex=12, .nEdge=12, .directed=0, .weighted=1 },
     { .filename="samples/petersen.dot", .nVertex=10, .nEdge=15, .directed=0, .weighted=0 },
     { .filename="samples/heawood.dot", .nVertex=14, .nEdge=21, .directed=0, .weighted=0 },
     { .filename="samples/sampledirected.dot", .nVertex=12, .nEdge=12, .directed=1, .weighted=1 },
-    { .filename="samples/samplepartialweighted.dot", .nVertex=12, .nEdge=12, .directed=1, .weighted=0 }
+    { .filename="samples/samplepartialweighted.dot", .nVertex=12, .nEdge=12, .directed=1, .weighted=0 },
+    { .filename="samples/dijkstrapequenonaodirecionado.dot", .nVertex=6, .nEdge=5, .directed=0, .weighted=0 }
 };
 
 static char* testGraphLoad()
@@ -109,7 +110,7 @@ static char* testNumeroVerticesAllGraphs()
         FILE *fp = fopen(pList[i].filename,"r");
         grafo grf = le_grafo(fp);
         char * message = (char * ) malloc(100 * sizeof(char));
-        sprintf(message, "Test 9 - Filename: %s Expected: %d, Found: %d ", pList[i].filename, pList[i].nVertex,  numero_vertices(grf));
+        sprintf(message, "Test 9 - Number of vertices Filename: %s Expected: %d, Found: %d ", pList[i].filename, pList[i].nVertex,  numero_vertices(grf));
         mu_assert(message,numero_vertices(grf)==pList[i].nVertex);
         free(grf);
         fclose(fp);
@@ -432,7 +433,8 @@ static char* testPesoTodasArestasPrimeiroVertice()
             {
                 peso = 1;
             }
-            else{
+            else
+            {
                 peso = atoi(ps);
             }
             sprintf(msg,"Test 21 - vertexes %s and %s expected to have weight. Filename: %s",
@@ -443,10 +445,90 @@ static char* testPesoTodasArestasPrimeiroVertice()
             mu_assert(msg,vizinho_peso(v1,v2)==peso);
         }
         agclose(g);
-
         destroi_grafo(grf);
         fclose(fp);
     }
+    return 0;
+}
+
+static char* testTodosVerticesIndice()
+{
+    for( int i = 0; i < pListSize; i++)
+    {
+        FILE *fp = fopen(pList[i].filename,"r");
+        grafo grf = le_grafo(fp);
+        rewind(fp);
+        Agraph_t *g = agread(fp, NULL);
+        unsigned int ii = 0;
+        for (Agnode_t *agfst=agfstnode(g); agfst; agfst=agnxtnode(g,agfst))
+        {
+            sprintf(
+                msg, "Test 22 - Vertice index comparison failed - Filename: %s Expected: %d, Found: %d\n",
+                pList[i].filename,
+                i,
+                indice(vertice_nome(agnameof(agfst),grf),grf));
+            mu_assert(msg,ii==indice(vertice_nome(agnameof(agfst),grf),grf));
+            ii++;
+        }
+        agclose(g);
+        destroi_grafo(grf);
+        fclose(fp);
+    }
+    return 0;
+}
+
+static char* testListaDistanciaPequenoNaoDirecionadoDistanciaUm()
+{
+    FILE *fp = fopen(pList[5].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    lista caminho = caminho_minimo(vertice_nome("c",grf),vertice_nome("d",grf),grf);
+    mu_assert("Test 23 - o caminho nao pode ser nulo",caminho!=NULL);
+    vertice v = (vertice) conteudo(primeiro_no(caminho));
+    mu_assert("Test 23 - o vertice nao pode ser nulo",v!=NULL);
+    sprintf(
+        msg, "Test 23 - Distancia simples failed - Filename: %s Expected: %d, Found: %d ",
+        pList[5].filename,
+        1,
+        indice(v,grf)
+    );
+    mu_assert(msg,indice(vertice_nome("c",grf),grf)==indice(v,grf));
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    return 0;
+}
+
+static char* testListaDistanciaPequenoNaoDirecionadoDistanciaDois()
+{
+    FILE *fp = fopen(pList[5].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    lista caminho = caminho_minimo(vertice_nome("a",grf),vertice_nome("c",grf),grf);
+    mu_assert("Test 24 - o caminho nao pode ser nulo",caminho!=NULL);
+    vertice v = (vertice) conteudo(primeiro_no(caminho));
+    vertice proximo = conteudo(proximo_no(primeiro_no(caminho)));
+    mu_assert("Test 24 - o vertice nao pode ser nulo",v!=NULL);
+    mu_assert("Test 24 - o proximo vertice nao pode ser nulo",proximo!=NULL);
+    sprintf(
+        msg, "Test 24 - Distancia simples failed - Filename: %s Expected: %d, Found: %d ",
+        pList[5].filename,
+        indice(vertice_nome("b",grf),grf),
+        indice(v,grf)
+    );
+    mu_assert(msg,indice(vertice_nome("b",grf),grf)==indice(v,grf));
+    sprintf(
+        msg, "Test 24 - Distancia simples failed - Filename: %s Expected: %d, Found: %d ",
+        pList[5].filename,
+        indice(vertice_nome("a",grf),grf),
+        indice(proximo,grf)
+    );
+    mu_assert(msg,indice(vertice_nome("a",grf),grf)==indice(proximo,grf));
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
     return 0;
 }
 
@@ -461,6 +543,7 @@ static char * all_tests()
     mu_run_test(testNumeroVertices);
     mu_run_test(testNumeroVertices10vezes);
     mu_run_test(testNumeroVerticesAllGraphs);
+    mu_run_test(testNumeroArestasAllGraphs);
     mu_run_test(testVerticesNome);
     mu_run_test(testTodosVerticesNome);
     mu_run_test(testDestroiGrafo);
@@ -474,6 +557,10 @@ static char * all_tests()
     mu_run_test(test_adiciona_lista);
     mu_run_test(test_primeiro_no);
     mu_run_test(testPesoTodasArestasPrimeiroVertice);
+    mu_run_test(testTodosVerticesIndice);
+    mu_run_test(testListaDistanciaPequenoNaoDirecionadoDistanciaUm);
+    mu_run_test(testListaDistanciaPequenoNaoDirecionadoDistanciaDois);
+
     return 0;
 }
 
