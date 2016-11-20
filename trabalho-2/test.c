@@ -532,6 +532,46 @@ static char* testListaDistanciaPequenoNaoDirecionadoDistanciaDois()
     return 0;
 }
 
+static char* testValorDistanciaPequenoNaoDirecionadoDistanciaUm()
+{
+    FILE *fp = fopen(pList[5].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    long int dist = distancia(vertice_nome("c",grf),vertice_nome("d",grf),grf);
+    sprintf(
+        msg, "Test 25 - Distancia simples failed - Filename: %s Expected: %d, Found: %d ",
+        pList[5].filename,
+        1,
+        dist
+    );
+    mu_assert(msg,1==dist);
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    return 0;
+}
+
+static char* testValorDistanciaPequenoNaoDirecionadoDistanciaDois()
+{
+    FILE *fp = fopen(pList[5].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    long int dist = distancia(vertice_nome("c",grf),vertice_nome("a",grf),grf);
+    sprintf(
+        msg, "Test 25 - Distancia simples failed - Filename: %s Expected: %d, Found: %d ",
+        pList[5].filename,
+        2,
+        dist
+    );
+    mu_assert(msg,2==dist);
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    return 0;
+}
+
 static char * all_tests()
 {
     mu_run_test(testGraphLoad);
@@ -560,6 +600,8 @@ static char * all_tests()
     mu_run_test(testTodosVerticesIndice);
     mu_run_test(testListaDistanciaPequenoNaoDirecionadoDistanciaUm);
     mu_run_test(testListaDistanciaPequenoNaoDirecionadoDistanciaDois);
+    mu_run_test(testValorDistanciaPequenoNaoDirecionadoDistanciaUm);
+    mu_run_test(testValorDistanciaPequenoNaoDirecionadoDistanciaDois);
 
     return 0;
 }

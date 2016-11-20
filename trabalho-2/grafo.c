@@ -517,9 +517,8 @@ vertice vertice_vizinho(vertice v, aresta* ar){
 }
 
 /* Algoritmos de distancia */
-veio_de* constroi_veio_de_dijkstra(vertice origem, grafo g){
+void constroi_veio_de_dijkstra(veio_de * veio_de, vertice origem, grafo g){
     //Inicia vertices
-    veio_de * veio_de = malloc(sizeof(veio_de) * g->nv);
     for(int i = 0; i < numero_vertices(g); i++){
         veio_de[i].v=g->vertices+i;
         veio_de[i].distancia=infinito;
@@ -551,13 +550,14 @@ veio_de* constroi_veio_de_dijkstra(vertice origem, grafo g){
     return veio_de;
 }
 
-int destroi_veio_de(veio_de *vd){
-    free(vd);
+int destroi_veio_de(veio_de **vd){
+    free(*vd);
     return 1;
 }
 
 lista caminho_minimo(vertice u, vertice v, grafo g){
-    veio_de *vd = constroi_veio_de_dijkstra(u,g);
+    veio_de *vd = malloc(sizeof(veio_de) * g->nv);
+    constroi_veio_de_dijkstra(vd,u,g);
     lista l = constroi_lista();
     veio_de *vertice_destino = vd + indice(v,g);
     while(vertice_destino->v != u){
@@ -565,6 +565,15 @@ lista caminho_minimo(vertice u, vertice v, grafo g){
         //pula para o qual veio
         vertice_destino = vd + vertice_destino->id_vertice_veio_de;
     }
+    destroi_veio_de(&vd);
     return l;
+}
+
+long int distancia(vertice u, vertice v, grafo g){
+    veio_de *vd = malloc(sizeof(veio_de) * g->nv);
+    constroi_veio_de_dijkstra(vd,u,g);
+    int valor = (vd + indice(v,g))->distancia;
+    destroi_veio_de(&vd);
+    return valor;
 }
 
