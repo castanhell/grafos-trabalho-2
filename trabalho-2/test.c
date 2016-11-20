@@ -349,30 +349,28 @@ static char* testPonderadoIncompleto()
     return 0;
 }
 
-static char* testTodasArestasPrimeiroVerticeNaoDirecionado()
+static char* testTodasArestasPrimeiroVertice()
 {
     for( int i = 0; i < pListSize; i++)
     {
         FILE *fp = fopen(pList[i].filename,"r");
         grafo grf = le_grafo(fp);
-        if(!direcionado(grf))
+        rewind(fp);
+        Agraph_t *g = agread(fp, NULL);
+        Agnode_t *agfst = agfstnode(g);
+        for (Agedge_t *a=agfstedge(g,agfst); a; a=agnxtedge(g,a,agfst))
         {
-            rewind(fp);
-            Agraph_t *g = agread(fp, NULL);
-            Agnode_t *agfst = agfstnode(g);
-            for (Agedge_t *a=agfstedge(g,agfst); a; a=agnxtedge(g,a,agfst))
-            {
-                vertice v1=vertice_nome(agnameof(aghead(a)),grf),
-                        v2=vertice_nome(agnameof(agtail(a)),grf);
-                sprintf(msg,"Test 19 - vertexes %s and %s expected to be neighboors. Filename: %s",
-                        nome_vertice(v1),
-                        nome_vertice(v2),
-                        pList[i].filename
-                       );
-                mu_assert(msg,vizinho(v1,v2)==1);
-            }
-            agclose(g);
+            vertice v1=vertice_nome(agnameof(aghead(a)),grf),
+                    v2=vertice_nome(agnameof(agtail(a)),grf);
+            sprintf(msg,"Test 19 - vertexes %s and %s expected to be neighboors. Filename: %s",
+                    nome_vertice(v1),
+                    nome_vertice(v2),
+                    pList[i].filename
+                   );
+            mu_assert(msg,vizinho(v1,v2)==1);
         }
+        agclose(g);
+
         destroi_grafo(grf);
         fclose(fp);
     }
@@ -401,9 +399,11 @@ static char* test_primeiro_no()
     sprintf(msg,"Teste 21 :Primeiro vertice esperado : 1, encontrado: %d", (int)conteudo(primeiro_no(l)));
     mu_assert(msg,1==(int)conteudo(primeiro_no(l)));
     no n = primeiro_no(l);
-    for(int i = 1; i < 5; i++){
+    for(int i = 1; i < 5; i++)
+    {
         int encontrado = 0;
-        if(proximo_no(n)){
+        if(proximo_no(n))
+        {
             encontrado = conteudo(proximo_no(n));
         }
         sprintf(msg,"Teste 21: Proximo no esperado : 1, encontrado: %d", i+1, encontrado );
@@ -413,6 +413,42 @@ static char* test_primeiro_no()
     return 0;
 }
 
+static char* testPesoTodasArestasPrimeiroVertice()
+{
+    for( int i = 0; i < pListSize; i++)
+    {
+        FILE *fp = fopen(pList[i].filename,"r");
+        grafo grf = le_grafo(fp);
+        rewind(fp);
+        Agraph_t *g = agread(fp, NULL);
+        Agnode_t *agfst = agfstnode(g);
+        for (Agedge_t *a=agfstedge(g,agfst); a; a=agnxtedge(g,a,agfst))
+        {
+            vertice v1=vertice_nome(agnameof(aghead(a)),grf),
+                    v2=vertice_nome(agnameof(agtail(a)),grf);
+            char *ps = agget(a, (char *)"peso");
+            int peso;
+            if(ps==NULL || strlen(ps)==0)
+            {
+                peso = 1;
+            }
+            else{
+                peso = atoi(ps);
+            }
+            sprintf(msg,"Test 21 - vertexes %s and %s expected to have weight. Filename: %s",
+                    nome_vertice(v1),
+                    nome_vertice(v2),
+                    pList[i].filename
+                   );
+            mu_assert(msg,vizinho_peso(v1,v2)==peso);
+        }
+        agclose(g);
+
+        destroi_grafo(grf);
+        fclose(fp);
+    }
+    return 0;
+}
 
 static char * all_tests()
 {
@@ -434,9 +470,10 @@ static char * all_tests()
     mu_run_test(testDirecionadoNaoDirecionado);
     mu_run_test(testPonderadoNaoPonderado);
     mu_run_test(testPonderadoIncompleto);
-    mu_run_test(testTodasArestasPrimeiroVerticeNaoDirecionado);
+    mu_run_test(testTodasArestasPrimeiroVertice);
     mu_run_test(test_adiciona_lista);
     mu_run_test(test_primeiro_no);
+    mu_run_test(testPesoTodasArestasPrimeiroVertice);
     return 0;
 }
 

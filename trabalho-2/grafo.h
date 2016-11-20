@@ -215,6 +215,8 @@ long int diametro(grafo g);
 vertice * vizinhos(vertice v);
 int vizinho(vertice v1, vertice v2);
 int adiciona_lista(lista l, void *conteudo);
+/* Retorna o peso da aresta se v1 é vizinho de v2 ou 0, c. c. */
+int vizinho_peso(vertice v1, vertice v2);
 
 #endif
 

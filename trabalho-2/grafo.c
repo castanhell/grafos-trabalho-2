@@ -15,19 +15,19 @@ struct grafo
 
 struct vertice
 {
-    vertice* vizinhos;
+    lista arestas;
     char *nome;
     int id;
     unsigned int grauEntrada;
     unsigned int grauSaida;
 };
 
-struct aresta
+typedef struct aresta
 {
     vertice origem;
     vertice destino;
     int peso;
-};
+} aresta;
 
 struct lista
 {
@@ -102,7 +102,8 @@ unsigned int tamanho_lista(lista l)
     return l->nNos;
 }
 
-void * conteudo(no n){
+void * conteudo(no n)
+{
     return n->conteudo;
 }
 
@@ -158,18 +159,21 @@ void inicia_vertice(vertice vertice)
 {
     vertice->grauEntrada=0;
     vertice->grauSaida=0;
+    vertice->arestas=NULL;
 }
 
-void insere_pesos(Agraph_t *g, grafo graph, Agedge_t *a, Agnode_t *v)
+void insere_pesos(Agraph_t *g, grafo graph, Agedge_t *a, Agnode_t *v, aresta* ar)
 {
     char *peso = agget(a, (char *)"peso");
     if(peso==NULL || strlen(peso)==0)
     {
         insere_ponderado(graph,0);
+        ar->peso=1;
     }
     else
     {
         insere_ponderado(graph,1);
+        ar->peso=atoi(peso);
     }
 }
 
@@ -200,7 +204,6 @@ void preencheVertices(Agraph_t *g, grafo graph)
         inicia_vertice(vertices + i );
         for (Agedge_t *a=agfstedge(g,v); a; a=agnxtedge(g,a,v))
         {
-            insere_pesos(g,graph,a,v);
             insere_graus_vertices(vertices+i,graph,a,v);
         }
         insere_nome_vertice(vertices+i,agnameof(v));
@@ -209,27 +212,59 @@ void preencheVertices(Agraph_t *g, grafo graph)
     graph->vertices=vertices;
 }
 
+void insere_aresta_vertice(vertice v, aresta* ar)
+{
+    if(v->arestas==NULL)
+    {
+        v->arestas=constroi_lista();
+    }
+    adiciona_lista(v->arestas,ar);
+}
+
 void preenche_vizinhos_vertice(Agraph_t *g, grafo graph)
 {
     for (Agnode_t *v=agfstnode(g); v; v=agnxtnode(g,v))
     {
-        vertice vv = vertice_nome(agnameof(v),graph);
-        int gvv = grau(vv,0,g);
-        vertice * vzv = malloc( sizeof(vertice) * gvv );
+        vertice v1 = vertice_nome(agnameof(v),graph);
+        int gvv = grau(v1,0,g);
         int i = 0;
         for (Agedge_t *a=agfstedge(g,v); a; a=agnxtedge(g,a,v))
         {
+            aresta * ar = malloc(sizeof(struct aresta));
             if(v == aghead(a))
             {
-                vzv[i] = vertice_nome(agnameof(agtail(a)),graph);
+                vertice v2 = vertice_nome(agnameof(agtail(a)),graph);
+                ar->origem=v2;
+                ar->destino=v1;
+                if(direcionado(graph))
+                {
+                    insere_aresta_vertice(v1,ar);
+                }
+                if(!direcionado(graph))
+                {
+                    insere_aresta_vertice(v1,ar);
+                    insere_aresta_vertice(v2,ar);
+                }
             }
             if (v == agtail(a))
             {
-                vzv[i] = vertice_nome(agnameof(aghead(a)),graph);
+                vertice v2 = vertice_nome(agnameof(aghead(a)),graph);
+                ar->origem=v2;
+                ar->destino=v1;
+                if(direcionado(graph))
+                {
+                    insere_aresta_vertice(v2,ar);
+                }
+                if(!direcionado(graph))
+                {
+                    insere_aresta_vertice(v1,ar);
+                    insere_aresta_vertice(v2,ar);
+                }
             }
+            insere_pesos(g,graph,a,v,ar);
+
             ++i;
         }
-        vv->vizinhos=vzv;
     }
 }
 
@@ -388,19 +423,37 @@ Retorna 1 se v1 é vizinho de v2 ou NULL, caso contrário
 */
 int vizinho(vertice v1, vertice v2)
 {
-    for(int i = 0; i < v1->grauEntrada+v1->grauSaida; i++)
+    no n = v1->arestas->primeiroNo;
+    while(n != NULL)
     {
-        if( v1->vizinhos[i] == v2 )
+        aresta * ar = (aresta*) n->conteudo;
+        if(ar->destino == v2)
         {
             return 1;
         }
+        if(ar->origem==v2)
+        {
+            return 1;
+        }
+        n = n->proximo;
     }
-    for(int i = 0; i < v2->grauEntrada+v2->grauSaida; i++)
+    return 0;
+}
+
+int vizinho_peso(vertice v1, vertice v2){
+ no n = v1->arestas->primeiroNo;
+    while(n != NULL)
     {
-        if( v2->vizinhos[i] == v1 )
+        aresta * ar = (aresta*) n->conteudo;
+        if(ar->destino == v2)
         {
-            return 1;
+            return ar->peso;
         }
+        if(ar->origem==v2)
+        {
+            return ar->peso;
+        }
+        n = n->proximo;
     }
     return 0;
 }
