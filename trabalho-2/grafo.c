@@ -445,6 +445,20 @@ vertice vertice_id(int id, grafo grf)
     return grf->vertices+id;
 }
 
+vertice cpy_vertice(vertice org, vertice dst){
+    dst->arestas=NULL;
+    dst->grauEntrada=org->id;
+    dst->grauSaida=org->id;
+    dst->id=org->id;
+    dst->nome=cpy_char(org->nome);
+}
+
+int destroi_vertice_dummy(vertice v){
+    free(v->nome);
+    free(v);
+    return 1;
+}
+
 unsigned int grauDirecionado(vertice v, int direcao)
 {
     if(direcao==-1)
@@ -613,17 +627,33 @@ lista caminho_minimo(vertice u, vertice v, grafo g)
     while(vertice_destino->v != u)
     {
         if(vertice_destino->id_vertice_veio_de == -1){
-            free(l);
+            destroi_lista(l,destroi_vertice_dummy);
             l=NULL;
             break;
         }
-        adiciona_lista(l,vertice_id(vertice_destino->id_vertice_veio_de,g));
+
+        vertice dummycpy = malloc(sizeof(struct vertice));
+        cpy_vertice(vertice_id(vertice_destino->id_vertice_veio_de,g),dummycpy);
+        adiciona_lista(l,dummycpy);
         //pula para o qual veio
         vertice_destino = veio_de_id(vd,vertice_destino->id_vertice_veio_de);
     }
     adiciona_lista(l,u);
     destroi_veio_de(&vd);
     return l;
+}
+
+long int diametro(grafo g){
+    long int diametro = 0;
+    for(int i = 0; i < numero_vertices(g); i++){
+        for(int j = 0; j < numero_vertices(g); j++){
+            int dist = distancia(vertice_id(i,g),vertice_id(j,g),g);
+            if(dist != infinito && diametro < dist){
+                diametro = dist;
+            }
+        }
+    }
+    return diametro;
 }
 
 long int distancia(vertice u, vertice v, grafo g)
@@ -636,5 +666,14 @@ long int distancia(vertice u, vertice v, grafo g)
 }
 
 long int **distancias(unsigned int **d, grafo g){
+    for(int i = 0; i < numero_vertices(g); i++){
+        for(int j = 0; j < numero_vertices(g); j++){
+            d[i][j] = distancia(vertice_id(i,g),vertice_id(j,g),g);
+        }
+    }
+    return d;
+}
+
+lista **caminhos_minimos(lista **c, grafo g){
 
 }

@@ -26,7 +26,7 @@
 	<stdio.h>
 	<stdlib.h>
 
-1479680707 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.c
+1479682877 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.c
 	<graphviz/cgraph.h>
 	"grafo.h"
 	<stdio.h>
@@ -36,7 +36,7 @@
 1479649254 /home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.h
 	<stdio.h>
 
-1479680251 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/test.c
+1479682852 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/test.c
 	<assert.h>
 	<graphviz/cgraph.h>
 	"grafo.h"
