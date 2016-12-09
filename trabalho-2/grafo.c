@@ -703,6 +703,33 @@ long int **distancias_dijkstra(long int **d, grafo g)
 }
 
 long int **distancias_fw(long int **d, grafo g){
+    for(int i = 0; i < numero_vertices(g); i++){
+        for(int j = 0; j < numero_vertices(g); j++){
+            if(i==j)
+                d[i][j] = 0;
+            else
+                d[i][j] = infinito;
+        }
+        vertice v = vertice_id(i,g);
+        lista ars = v->arestas;
+        no ar = primeiro_no(ars);
+        while(ar != NULL){
+            aresta * a = (aresta*) ar->conteudo;
+            d[i][a->destino->id] = a->peso;
+            ar = ar->proximo;
+        }
+    }
+
+    for(int k = 0; k < numero_vertices(g); k++){
+            for(int i = 0; i < numero_vertices(g); i++){
+                    for(int j = 0; j < numero_vertices(g); j++){
+                        if(d[i][j] > d[i][k] + d[k][j]){
+                            d[i][j] = d[i][k] + d[k][j];
+                        }
+                    }
+            }
+    }
+
     return d;
 }
 

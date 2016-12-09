@@ -733,6 +733,8 @@ static char* testMatrizDistanciasNaoDirecionadoPequeno()
     }
     distancias(M,grf,'d');
     mu_assert("M[0][5] deveria ser 5",M[0][5]==5);
+    distancias(M,grf,'f');
+    mu_assert("M[0][5] deveria ser 5",M[0][5]==5);
     agclose(g);
     destroi_grafo(grf);
     fclose(fp);
