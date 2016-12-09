@@ -719,46 +719,6 @@ static char* testValorDistanciaNaoDirecionadoComCicloCaminhosRedundantes()
     return 0;
 }
 
-static char* testValorDiametroNaoDirecionadoComCicloCaminhosRedundantes()
-{
-    FILE *fp = fopen(pList[9].filename,"r");
-    grafo grf = le_grafo(fp);
-    rewind(fp);
-    Agraph_t *g = agread(fp, NULL);
-    long int diam = diametro(grf);
-    sprintf(
-        msg, "Test 33 - Diametro simples failed - Filename: %s Expected: %d, Found: %d ",
-        pList[5].filename,
-        3,
-        diam
-    );
-    mu_assert(msg,3==diam);
-    agclose(g);
-    destroi_grafo(grf);
-    fclose(fp);
-    return 0;
-}
-
-static char* testValorDiametroDirecionadoPequeno()
-{
-    FILE *fp = fopen(pList[7].filename,"r");
-    grafo grf = le_grafo(fp);
-    rewind(fp);
-    Agraph_t *g = agread(fp, NULL);
-    long int diam = diametro(grf);
-    sprintf(
-        msg, "Test 34 - Diametro simples failed - Filename: %s Expected: %d, Found: %d ",
-        pList[5].filename,
-        5,
-        diam
-    );
-    mu_assert(msg,5==diam);
-    agclose(g);
-    destroi_grafo(grf);
-    fclose(fp);
-    return 0;
-}
-
 static char * all_tests()
 {
     mu_run_test(testGraphLoad);
@@ -797,8 +757,7 @@ static char * all_tests()
     mu_run_test(testListaDistancia2ComponentesNaoDirecionadoDistanciaInfinita);
     mu_run_test(testValorDistanciaNaoDirecionadoComCiclo);
     mu_run_test(testValorDistanciaNaoDirecionadoComCicloCaminhosRedundantes);
-    mu_run_test(testValorDiametroNaoDirecionadoComCicloCaminhosRedundantes);
-    mu_run_test(testValorDiametroDirecionadoPequeno);
+
     return 0;
 }
 
