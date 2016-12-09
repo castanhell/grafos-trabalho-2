@@ -19,7 +19,7 @@ param pList [] =
     { .filename="samples/samplepartialweighted.dot", .nVertex=12, .nEdge=12, .directed=1, .weighted=0 },
     { .filename="samples/dijkstrapequenonaodirecionado.dot", .nVertex=6, .nEdge=5, .directed=0, .weighted=0 },
     { .filename="samples/dijkstrapequenonaodirecionado.dot", .nVertex=6, .nEdge=5, .directed=0, .weighted=0 },
-    { .filename="samples/dijkstrapequenodirecionado.dot", .nVertex=6, .nEdge=5, .directed=1, .weighted=0 },
+    { .filename="samples/dijkstrapequenodirecionado.dot", .nVertex=7, .nEdge=5, .directed=1, .weighted=0 },
     { .filename="samples/dijkstrapequenodirecionado2componentes.dot", .nVertex=12, .nEdge=10, .directed=0, .weighted=0 },
     { .filename="samples/dijkstrapequenonaodirecionadociclo.dot", .nVertex=6, .nEdge=6, .directed=0, .weighted=0 }
 };
@@ -706,13 +706,13 @@ static char* testValorDistanciaNaoDirecionadoComCicloCaminhosRedundantes()
     );
     mu_assert(msg,3==dist);
     lista caminhos = caminho_minimo(vertice_nome("a",grf),vertice_nome("c",grf),grf);
-     sprintf(
+    sprintf(
         msg, "Test 32 - Tamanho lista failed - Filename: %s Expected: %d, Found: %d ",
         pList[5].filename,
         3,
         tamanho_lista(caminhos)
     );
-    mu_assert(msg,3==tamanho_lista(caminhos));
+    mu_assert(msg,2==tamanho_lista(caminhos));
     agclose(g);
     destroi_grafo(grf);
     fclose(fp);
@@ -734,7 +734,7 @@ static char* testValorCNaoDirecionadoComCicloCaminhosRedundantes()
     );
     mu_assert(msg,3==dist);
     lista caminhos = caminho_minimo(vertice_nome("a",grf),vertice_nome("c",grf),grf);
-     sprintf(
+    sprintf(
         msg, "Test 32 - Tamanho lista failed - Filename: %s Expected: %d, Found: %d ",
         pList[5].filename,
         3,
@@ -756,7 +756,8 @@ static char* testMatrizDistanciasNaoDirecionadoPequeno()
     long int diam = diametro(grf);
     long int ** M;
     M = malloc( numero_vertices(grf) * sizeof(long int*));
-    for(int j = 0; j < numero_vertices(grf); j++){
+    for(int j = 0; j < numero_vertices(grf); j++)
+    {
         M[j] = malloc( numero_vertices(grf) * sizeof(long int));
     }
     distancias(M,grf,'d');
@@ -777,34 +778,22 @@ static char* testListaCaminhosGrafoNaoDirecionado()
     rewind(fp);
     Agraph_t *g = agread(fp, NULL);
     lista ** caminhos = malloc(numero_vertices(grf) * sizeof(lista*));
-    for(int j = 0; j < numero_vertices(grf) ; j++) {
+    for(int j = 0; j < numero_vertices(grf) ; j++)
+    {
         caminhos[j] = malloc(numero_vertices(grf) * sizeof(lista));
     }
     caminhos_minimos(caminhos,grf,'d');
-    mu_assert("Dijkstra: M[0][5] deveria ser 5",tamanho_lista(caminhos[0][5])==6);
+    mu_assert("Dijkstra: M[0][5] deveria ser 5",tamanho_lista(caminhos[0][5])==5);
     caminhos_minimos(caminhos,grf,'a');
-    mu_assert("FW : M[0][5] deveria ser 5",tamanho_lista(caminhos[0][5])==6);
-    agclose(g);
-    destroi_grafo(grf);
-    fclose(fp);
-    free(caminhos);
-    return 0;
-}
-
-static char* testMatrizDistanciasGrafoNaoDirecionado2Componentes()
-{
-    FILE *fp = fopen(pList[8].filename,"r");
-    grafo grf = le_grafo(fp);
-    rewind(fp);
-    Agraph_t *g = agread(fp, NULL);
-    lista ** caminhos = malloc(numero_vertices(grf) * sizeof(lista*));
-    for(int j = 0; j < numero_vertices(grf) ; j++) {
-        caminhos[j] = malloc(numero_vertices(grf) * sizeof(lista));
+    no n = primeiro_no(caminhos[0][5]);
+    while(n != NULL)
+    {
+        vertice v = (vertice) conteudo(n);
+        printf("%s ", nome_vertice(v));
+        n = proximo_no(n);
     }
-    caminhos_minimos(caminhos,grf,'d');
-    mu_assert("Dijkstra: M[6][10] deveria ser 5",tamanho_lista(caminhos[0][10])==0);
-    caminhos_minimos(caminhos,grf,'a');
-    mu_assert("FW : M[0][4] deveria ser 5",tamanho_lista(caminhos[0][4])==5);
+    printf("\n");
+    mu_assert("FW : M[0][5] deveria ser 5",tamanho_lista(caminhos[0][5])==5);
     agclose(g);
     destroi_grafo(grf);
     fclose(fp);
@@ -821,17 +810,108 @@ static char* testListaCaminhosGrafoNaoDirecionado2Componentes()
     long int diam = diametro(grf);
     long int ** M;
     M = malloc( numero_vertices(grf) * sizeof(long int*));
-    for(int j = 0; j < numero_vertices(grf); j++){
+    for(int j = 0; j < numero_vertices(grf); j++)
+    {
         M[j] = malloc( numero_vertices(grf) * sizeof(long int));
     }
-   // distancias(M,grf,'d');
-    //mu_assert("Dijkstra: M[0][6] deveria ser infinito",M[0][6]==infinito);
+    distancias(M,grf,'d');
+    mu_assert("Dijkstra: M[0][6] deveria ser infinito",M[0][6]==infinito);
     distancias(M,grf,'a');
     mu_assert("FW : M[0][10] deveria ser infinito",M[0][10]==infinito);
     agclose(g);
     destroi_grafo(grf);
     fclose(fp);
     free(M);
+    return 0;
+}
+
+static char* testDistanciaCaminhosGrafoDirecionado()
+{
+    FILE *fp = fopen(pList[7].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    long int diam = diametro(grf);
+    long int ** M;
+    M = malloc( numero_vertices(grf) * sizeof(long int*));
+    for(int j = 0; j < numero_vertices(grf); j++)
+    {
+        M[j] = malloc( numero_vertices(grf) * sizeof(long int));
+    }
+    distancias(M,grf,'d');
+    mu_assert("FW : M[0][5] deveria ser 5",M[0][5]==5);
+    for(int i = 0; i < numero_vertices(grf); i++)
+    {
+        for(int j = 0; j < numero_vertices(grf); j++)
+        {
+            printf("%d ", M[i][j]);
+        }
+        printf("\n");
+    }
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    free(M);
+    return 0;
+}
+
+static char* testDistanciaFWCaminhosGrafoDirecionado()
+{
+    FILE *fp = fopen(pList[7].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    long int diam = diametro(grf);
+    long int ** M;
+    M = malloc( numero_vertices(grf) * sizeof(long int*));
+    for(int j = 0; j < numero_vertices(grf); j++)
+    {
+        M[j] = malloc( numero_vertices(grf) * sizeof(long int));
+    }
+    distancias(M,grf,'a');
+    mu_assert("FW : M[0][5] deveria ser 5",M[0][5]==5);
+    for(int i = 0; i < numero_vertices(grf); i++)
+    {
+        for(int j = 0; j < numero_vertices(grf); j++)
+        {
+            printf("%d ", M[i][j]);
+        }
+        printf("\n");
+    }
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    free(M);
+    return 0;
+}
+
+static char* testMatrizDistanciasGrafoNaoDirecionado2Componentes()
+{
+    FILE *fp = fopen(pList[8].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    lista ** caminhos = malloc(numero_vertices(grf) * sizeof(lista*));
+    for(int j = 0; j < numero_vertices(grf) ; j++)
+    {
+        caminhos[j] = malloc(numero_vertices(grf) * sizeof(lista));
+    }
+    caminhos_minimos(caminhos,grf,'a');
+    mu_assert("Dijkstra: M[6][10] deveria ser 5",tamanho_lista(caminhos[0][10])==0);
+    caminhos_minimos(caminhos,grf,'d');
+    mu_assert("FW : M[0][4] deveria ser 5",tamanho_lista(caminhos[0][4])==4);
+    no n = primeiro_no(caminhos[0][5]);
+    while(n != NULL)
+    {
+        vertice v = (vertice) conteudo(n);
+        printf("%s ", nome_vertice(v));
+        n = proximo_no(n);
+    }
+    printf("\n");
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    free(caminhos);
     return 0;
 }
 
@@ -877,6 +957,9 @@ static char * all_tests()
     mu_run_test(testListaCaminhosGrafoNaoDirecionado);
     mu_run_test(testListaCaminhosGrafoNaoDirecionado2Componentes);
     mu_run_test(testListaCaminhosGrafoNaoDirecionado2Componentes);
+    mu_run_test(testDistanciaCaminhosGrafoDirecionado);
+    mu_run_test(testDistanciaFWCaminhosGrafoDirecionado);
+    mu_run_test(testMatrizDistanciasGrafoNaoDirecionado2Componentes);
     return 0;
 }
 

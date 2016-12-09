@@ -1,7 +1,8 @@
-digraph dijkstrapequeno{ 
-	a -> b; 
-	b -> c; 
+digraph dijkstrapequeno{
+	a -> b;
+	b -> c;
     c -> d;
     d -> e;
     e -> f;
+    g;
 }

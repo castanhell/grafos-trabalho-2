@@ -640,7 +640,7 @@ lista constroi_lista_minimo(vertice u, vertice v, veio_de* vd,grafo g)
         //pula para o qual veio
         vertice_destino = veio_de_id(vd,vertice_destino->id_vertice_veio_de);
     }
-    adiciona_lista(l,u);
+    //adiciona_lista(l,u);
     return l;
 }
 
@@ -716,6 +716,8 @@ long int **distancias_fw(long int **d, grafo g, int **vai_para)
         }
         vertice v = vertice_id(i,g);
         lista ars = v->arestas;
+        //Vertices que não possuem arestas (isolados)
+        if(ars==NULL) {continue; }
         no ar = primeiro_no(ars);
         while(ar != NULL)
         {
@@ -791,10 +793,6 @@ void preenche_caminho_fw(int id_origem, int id_destino, int ** vai_para, grafo g
         adiciona_lista(l,dummycpy);
         id_vertice = vai_para[id_vertice][id_destino];
     }
-    vertice dummycpy = malloc(sizeof(struct vertice));
-    cpy_vertice(vertice_id(id_vertice,g),dummycpy);
-    adiciona_lista(l,dummycpy);
-    id_vertice = vai_para[id_vertice][id_destino];
 }
 
 lista constroi_caminho_minimo_fw( int origem, int destino, grafo g, int ** vai_para)
