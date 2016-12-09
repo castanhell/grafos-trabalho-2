@@ -719,7 +719,26 @@ static char* testValorDistanciaNaoDirecionadoComCicloCaminhosRedundantes()
     return 0;
 }
 
-
+static char* testMatrizDistanciasNaoDirecionadoPequeno()
+{
+    FILE *fp = fopen(pList[5].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    long int diam = diametro(grf);
+    long int ** M;
+    M = malloc( numero_vertices(grf) * sizeof(long int*));
+    for(int j = 0; j < numero_vertices(grf); j++){
+        M[j] = malloc( numero_vertices(grf) * sizeof(long int));
+    }
+    distancias(M,grf,'d');
+    mu_assert("M[0][5] deveria ser 5",M[0][5]==5);
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    free(M);
+    return 0;
+}
 
 static char * all_tests()
 {
@@ -759,7 +778,7 @@ static char * all_tests()
     mu_run_test(testListaDistancia2ComponentesNaoDirecionadoDistanciaInfinita);
     mu_run_test(testValorDistanciaNaoDirecionadoComCiclo);
     mu_run_test(testValorDistanciaNaoDirecionadoComCicloCaminhosRedundantes);
-
+    mu_run_test(testMatrizDistanciasNaoDirecionadoPequeno);
     return 0;
 }
 

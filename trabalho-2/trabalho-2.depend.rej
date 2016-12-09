@@ -1,0 +1,23 @@
+--- trabalho-2.depend
++++ trabalho-2.depend
+@@ -26,17 +26,17 @@
+ 	<stdio.h>
+ 	<stdlib.h>
+ 
+-1481294942 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.c
++1479682877 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.c
+ 	<graphviz/cgraph.h>
+ 	"grafo.h"
+ 	<stdio.h>
+ 	<stdlib.h>
+ 	<string.h>
+ 
+-1481266322 /home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.h
++1479649254 /home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.h
+ 	<stdio.h>
+ 
+-1481266450 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/test.c
++1479682852 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/test.c
+ 	<assert.h>
+ 	<graphviz/cgraph.h>
+ 	"grafo.h"

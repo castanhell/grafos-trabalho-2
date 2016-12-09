@@ -1,0 +1,116 @@
+--- grafo.c
++++ grafo.c
+@@ -445,8 +445,7 @@ vertice vertice_id(int id, grafo grf)
+     return grf->vertices+id;
+ }
+ 
+-vertice cpy_vertice(vertice org, vertice dst)
+-{
++vertice cpy_vertice(vertice org, vertice dst){
+     dst->arestas=NULL;
+     dst->grauEntrada=org->id;
+     dst->grauSaida=org->id;
+@@ -615,19 +613,19 @@ int destroi_veio_de(veio_de **vd)
+     return 1;
+ }
+ 
+-veio_de* veio_de_id(veio_de* referencia, int id)
+-{
++veio_de* veio_de_id(veio_de* referencia, int id){
+     return referencia + id;
+ }
+ 
+-lista constroi_lista_minimo(vertice u, vertice v, veio_de* vd,grafo g)
++lista caminho_minimo(vertice u, vertice v, grafo g)
+ {
++    veio_de *vd = malloc(sizeof(veio_de) * g->nv);
++    constroi_veio_de_dijkstra(vd,u,g);
+     veio_de *vertice_destino = veio_de_id(vd,indice(v,g));
+     lista l = constroi_lista();
+     while(vertice_destino->v != u)
+     {
+-        if(vertice_destino->id_vertice_veio_de == -1)
+-        {
++        if(vertice_destino->id_vertice_veio_de == -1){
+             destroi_lista(l,destroi_vertice_dummy);
+             l=NULL;
+             break;
+@@ -644,33 +642,16 @@ lista caminho_minimo(vertice u, vertice v, grafo g)
+     return l;
+ }
+ 
+-lista caminho_minimo(vertice u, vertice v, grafo g)
+-{
+-    veio_de *vd = malloc(sizeof(veio_de) * g->nv);
+-    constroi_veio_de_dijkstra(vd,u,g);
+-    return constroi_lista_minimo(u, v,vd, g);
+-}
+-
+-long int diametro(grafo g)
+-{
++long int diametro(grafo g){
+     long int diametro = 0;
+-    veio_de *vd = malloc(sizeof(veio_de) * g->nv);
+-    long int dist;
+-
+-    for(int i = 0; i < numero_vertices(g); i++)
+-    {
+-        constroi_veio_de_dijkstra(vd,vertice_id(i,g),g);
+-        for(int j = 0; j < numero_vertices(g); j++)
+-        {
+-            veio_de *vdptr = (vd + j);
+-            dist = vdptr->distancia;
+-            if(dist != infinito && diametro < dist)
+-            {
++    for(int i = 0; i < numero_vertices(g); i++){
++        for(int j = 0; j < numero_vertices(g); j++){
++            int dist = distancia(vertice_id(i,g),vertice_id(j,g),g);
++            if(dist != infinito && diametro < dist){
+                 diametro = dist;
+             }
+         }
+     }
+-    destroi_veio_de(&vd);
+     return diametro;
+ }
+ 
+@@ -683,33 +664,15 @@ long int distancia(vertice u, vertice v, grafo g)
+     return valor;
+ }
+ 
+-long int **distancias(long int **d, grafo g, char algoritmo)
+-{
+-    veio_de *vd = malloc(sizeof(veio_de) * numero_vertices(g));
+-    for(int i = 0; i < numero_vertices(g); i++)
+-    {
+-        constroi_veio_de_dijkstra(vd,vertice_id(i,g),g);
+-        for(int j = 0; j < numero_vertices(g); j++)
+-        {
+-            veio_de *vdptr = (vd + j);
+-            d[i][j] = vdptr->distancia;
++long int **distancias(unsigned int **d, grafo g){
++    for(int i = 0; i < numero_vertices(g); i++){
++        for(int j = 0; j < numero_vertices(g); j++){
++            d[i][j] = distancia(vertice_id(i,g),vertice_id(j,g),g);
+         }
+     }
+-    destroi_veio_de(&vd);
+     return d;
+ }
+ 
+-lista **caminhos_minimos(lista **c, grafo g, char algoritmo)
+-{
+-    veio_de *vd = malloc(sizeof(veio_de) * g->nv);
+-    for(int i = 0; i < numero_vertices(g); i++)
+-    {
+-        constroi_veio_de_dijkstra(vd,vertice_id(i,g),g);
+-        for(int j = 0; j < numero_vertices(g); j++)
+-        {
+-            c[i][j]=constroi_lista_minimo( vertice_id(i,g), vertice_id(j,g),vd, g);
+-        }
+-    }
+-    destroi_veio_de(&vd);
+-    return c;
++lista **caminhos_minimos(lista **c, grafo g){
++
+ }

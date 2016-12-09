@@ -26,17 +26,33 @@
 	<stdio.h>
 	<stdlib.h>
 
-1481299865 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.c
+1481294942 ated upstream
+
+1481295464 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.c
 	<graphviz/cgraph.h>
 	"grafo.h"
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 
-1481297589 /home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.h
+1481266450 shed changes
+	<graphviz/cgraph.h>
+	"grafo.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	<graphviz/cgraph.h>
+	"grafo.h"
+	"minunit.h"
+	"parameters.h"
+	<stdio.h>
+	<stdlib.h>
+
+1481295464 /home/lucas/Documentos/grafos/trabalho-2/trabalho-2/grafo.h
 	<stdio.h>
 
-1481299847 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/test.c
+1481295464 source:/home/lucas/Documentos/grafos/trabalho-2/trabalho-2/test.c
 	<assert.h>
 	<graphviz/cgraph.h>
 	"grafo.h"

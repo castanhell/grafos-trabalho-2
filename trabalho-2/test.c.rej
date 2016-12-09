@@ -1,0 +1,44 @@
+--- test.c
++++ test.c
+@@ -759,32 +759,6 @@ static char* testValorDiametroDirecionadoPequeno()
+     return 0;
+ }
+ 
+-static char* testMatrizDistanciasNaoDirecionadoPequeno()
+-{
+-    FILE *fp = fopen(pList[5].filename,"r");
+-    grafo grf = le_grafo(fp);
+-    rewind(fp);
+-    Agraph_t *g = agread(fp, NULL);
+-    long int diam = diametro(grf);
+-    int **M = malloc(sizeof(int*) * numero_vertices(grf));
+-    for(int j = 0; j < numero_vertices(grf) ;j++){
+-        M[j] = malloc(sizeof(int) * numero_vertices(grf));
+-    }
+-    sprintf(
+-        msg, "Test 35 - Diametro simples failed - Filename: %s Expected: %d, Found: %d ",
+-        pList[5].filename,
+-        5,
+-        diam
+-    );
+-    distancias(M,grf,'d');
+-    mu_assert("M[0][5] deveria ser 5",M[0][5]==5);
+-    agclose(g);
+-    destroi_grafo(grf);
+-    fclose(fp);
+-    free(M);
+-    return 0;
+-}
+-
+ static char * all_tests()
+ {
+     mu_run_test(testGraphLoad);
+@@ -825,8 +799,6 @@ static char * all_tests()
+     mu_run_test(testValorDistanciaNaoDirecionadoComCicloCaminhosRedundantes);
+     mu_run_test(testValorDiametroNaoDirecionadoComCicloCaminhosRedundantes);
+     mu_run_test(testValorDiametroDirecionadoPequeno);
+-    mu_run_test(testMatrizDistanciasNaoDirecionadoPequeno);
+-
+     return 0;
+ }
+ 

@@ -26,7 +26,10 @@ unsigned int tamanho_lista(lista l);
 //------------------------------------------------------------------------------
 // devolve o primeiro nó da lista l,
 //      ou NULL, se l é vazia
-no primeiro_no(lista l); //------------------------------------------------------------------------------
+
+no primeiro_no(lista l);
+
+//------------------------------------------------------------------------------
 // devolve o sucessor do nó n,
 //      ou NULL, se n for o último nó da lista
 
@@ -190,18 +193,28 @@ unsigned int indice(vertice v, grafo g);
 // maneira que d[indice(u,g)][indice(v,g)] tenha o valor da distância
 // entre os vértices u e v em g
 //
+// quando g é ponderado, os pesos são todos não negativos
+//
+// usa o algoritmo de Dijkstra,       se algoritmo == 'd'
+//  ou o algoritmo de Floyd-Warshall, caso contrário.
+//
 // devolve d
 
-long int **distancias(unsigned int **d, grafo g);
+long int **distancias(long int **d, grafo g, char algoritmo);
 
 //------------------------------------------------------------------------------
 // preenche a matriz c com caminhos mínimos entre os vértices de g de
 // maneira que c[indice(u,g)][indice(v,g)] tenha um caminho mínimo
 // entre os vértices u e v em g
 //
-// devolve d
+// usa o algoritmo de Dijkstra,       se algoritmo == 'd'
+//  ou o algoritmo de Floyd-Warshall, caso contrário.
+//
+// quando g é ponderado, os pesos são todos não negativos
+//
+// devolve c
 
-lista **caminhos_minimos(lista **c, grafo g);
+lista **caminhos_minimos(lista **c, grafo g, char algoritmo);
 
 //------------------------------------------------------------------------------
 // devolve o diâmetro de g
