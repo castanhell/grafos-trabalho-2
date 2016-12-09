@@ -664,7 +664,7 @@ static char* testListaDistancia2ComponentesNaoDirecionadoDistanciaInfinita()
     rewind(fp);
     Agraph_t *g = agread(fp, NULL);
     lista caminho = caminho_minimo(vertice_nome("a",grf),vertice_nome("c1",grf),grf);
-    mu_assert("Test 30 - o caminho deve ser nulo",caminho==NULL);
+    mu_assert("Test 30 - o caminho deve ser nulo",tamanho_lista(caminho)==0);
     agclose(g);
     destroi_grafo(grf);
     fclose(fp);
@@ -791,6 +791,50 @@ static char* testListaCaminhosGrafoNaoDirecionado()
     return 0;
 }
 
+static char* testMatrizDistanciasGrafoNaoDirecionado2Componentes()
+{
+    FILE *fp = fopen(pList[8].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    lista ** caminhos = malloc(numero_vertices(grf) * sizeof(lista*));
+    for(int j = 0; j < numero_vertices(grf) ; j++) {
+        caminhos[j] = malloc(numero_vertices(grf) * sizeof(lista));
+    }
+    caminhos_minimos(caminhos,grf,'d');
+    mu_assert("Dijkstra: M[6][10] deveria ser 5",tamanho_lista(caminhos[0][10])==0);
+    caminhos_minimos(caminhos,grf,'a');
+    mu_assert("FW : M[0][4] deveria ser 5",tamanho_lista(caminhos[0][4])==5);
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    free(caminhos);
+    return 0;
+}
+
+static char* testListaCaminhosGrafoNaoDirecionado2Componentes()
+{
+    FILE *fp = fopen(pList[8].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    long int diam = diametro(grf);
+    long int ** M;
+    M = malloc( numero_vertices(grf) * sizeof(long int*));
+    for(int j = 0; j < numero_vertices(grf); j++){
+        M[j] = malloc( numero_vertices(grf) * sizeof(long int));
+    }
+   // distancias(M,grf,'d');
+    //mu_assert("Dijkstra: M[0][6] deveria ser infinito",M[0][6]==infinito);
+    distancias(M,grf,'a');
+    mu_assert("FW : M[0][10] deveria ser infinito",M[0][10]==infinito);
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    free(M);
+    return 0;
+}
+
 static char * all_tests()
 {
     mu_run_test(testGraphLoad);
@@ -831,6 +875,8 @@ static char * all_tests()
     mu_run_test(testValorDistanciaNaoDirecionadoComCicloCaminhosRedundantes);
     mu_run_test(testMatrizDistanciasNaoDirecionadoPequeno);
     mu_run_test(testListaCaminhosGrafoNaoDirecionado);
+    mu_run_test(testListaCaminhosGrafoNaoDirecionado2Componentes);
+    mu_run_test(testListaCaminhosGrafoNaoDirecionado2Componentes);
     return 0;
 }
 

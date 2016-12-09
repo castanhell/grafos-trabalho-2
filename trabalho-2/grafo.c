@@ -631,11 +631,9 @@ lista constroi_lista_minimo(vertice u, vertice v, veio_de* vd,grafo g)
     {
         if(vertice_destino->id_vertice_veio_de == -1)
         {
-            destroi_lista(l,destroi_vertice_dummy);
-            l=NULL;
-            break;
+            l->nNos=0;
+            return l;
         }
-
         vertice dummycpy = malloc(sizeof(struct vertice));
         cpy_vertice(vertice_id(vertice_destino->id_vertice_veio_de,g),dummycpy);
         adiciona_lista(l,dummycpy);
