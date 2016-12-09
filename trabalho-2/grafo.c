@@ -579,6 +579,8 @@ void constroi_veio_de_dijkstra(veio_de * veio_de, vertice origem, grafo g)
         veio_de[i].processado=0;
     }
     veio_de[origem->id].distancia = 0;
+    veio_de[origem->id].id_vertice_veio_de = origem->id;
+    veio_de[origem->id].v = origem;
     //Executa o algoritmo
     int processados = 0;
     while(processados < numero_vertices(g))
@@ -641,7 +643,6 @@ lista constroi_lista_minimo(vertice u, vertice v, veio_de* vd,grafo g)
         vertice_destino = veio_de_id(vd,vertice_destino->id_vertice_veio_de);
     }
     adiciona_lista(l,u);
-    destroi_veio_de(&vd);
     return l;
 }
 
@@ -649,7 +650,9 @@ lista caminho_minimo(vertice u, vertice v, grafo g)
 {
     veio_de *vd = malloc(sizeof(veio_de) * g->nv);
     constroi_veio_de_dijkstra(vd,u,g);
-    return constroi_lista_minimo(u, v,vd, g);
+    lista lista_minimo = constroi_lista_minimo(u, v,vd, g);
+    destroi_veio_de(&vd);
+    return lista_minimo;
 }
 
 long int diametro(grafo g)
@@ -702,9 +705,12 @@ long int **distancias_dijkstra(long int **d, grafo g)
     return d;
 }
 
-long int **distancias_fw(long int **d, grafo g){
-    for(int i = 0; i < numero_vertices(g); i++){
-        for(int j = 0; j < numero_vertices(g); j++){
+long int **distancias_fw(long int **d, grafo g, int **vai_para)
+{
+    for(int i = 0; i < numero_vertices(g); i++)
+    {
+        for(int j = 0; j < numero_vertices(g); j++)
+        {
             if(i==j)
                 d[i][j] = 0;
             else
@@ -713,38 +719,54 @@ long int **distancias_fw(long int **d, grafo g){
         vertice v = vertice_id(i,g);
         lista ars = v->arestas;
         no ar = primeiro_no(ars);
-        while(ar != NULL){
+        while(ar != NULL)
+        {
             aresta * a = (aresta*) ar->conteudo;
             d[i][a->destino->id] = a->peso;
             ar = ar->proximo;
+            if(vai_para)
+            {
+                vai_para[i][a->destino->id] = a->destino->id;
+            }
         }
     }
 
-    for(int k = 0; k < numero_vertices(g); k++){
-            for(int i = 0; i < numero_vertices(g); i++){
-                    for(int j = 0; j < numero_vertices(g); j++){
-                        if(d[i][j] > d[i][k] + d[k][j]){
-                            d[i][j] = d[i][k] + d[k][j];
-                        }
+    for(int k = 0; k < numero_vertices(g); k++)
+    {
+        for(int i = 0; i < numero_vertices(g); i++)
+        {
+            for(int j = 0; j < numero_vertices(g); j++)
+            {
+                if(d[i][j] > d[i][k] + d[k][j])
+                {
+                    d[i][j] = d[i][k] + d[k][j];
+                    if(vai_para)
+                    {
+                        vai_para[i][j] = vai_para[i][k];
                     }
+                }
             }
+        }
     }
 
     return d;
 }
 
-long int **distancias(long int **d, grafo g, char algoritmo){
-    if(algoritmo=='d'){
+long int **distancias(long int **d, grafo g, char algoritmo)
+{
+    if(algoritmo=='d')
+    {
         return distancias_dijkstra(d,g);
     }
-    else{
-        return distancias_fw(d,g);
+    else
+    {
+        return distancias_fw(d,g,NULL);
     }
 }
 
-lista **caminhos_minimos(lista **c, grafo g, char algoritmo)
+lista **caminhos_minimos_dijkstra(lista **c, grafo g)
 {
-    veio_de *vd = malloc(sizeof(veio_de) * g->nv);
+    veio_de *vd = malloc(sizeof(veio_de) * numero_vertices(g));
     for(int i = 0; i < numero_vertices(g); i++)
     {
         constroi_veio_de_dijkstra(vd,vertice_id(i,g),g);
@@ -755,4 +777,76 @@ lista **caminhos_minimos(lista **c, grafo g, char algoritmo)
     }
     destroi_veio_de(&vd);
     return c;
+}
+
+void preenche_caminho_fw(int id_origem, int id_destino, int ** vai_para, grafo g, lista l)
+{
+    if(vai_para[id_origem][id_destino] == infinito)
+    {
+        return;
+    }
+    int id_vertice = id_origem;
+    while(id_vertice!=id_destino)
+    {
+        vertice dummycpy = malloc(sizeof(struct vertice));
+        cpy_vertice(vertice_id(id_vertice,g),dummycpy);
+        adiciona_lista(l,dummycpy);
+        id_vertice = vai_para[id_vertice][id_destino];
+    }
+    vertice dummycpy = malloc(sizeof(struct vertice));
+    cpy_vertice(vertice_id(id_vertice,g),dummycpy);
+    adiciona_lista(l,dummycpy);
+    id_vertice = vai_para[id_vertice][id_destino];
+}
+
+lista constroi_caminho_minimo_fw( int origem, int destino, grafo g, int ** vai_para)
+{
+    lista l = constroi_lista();
+    preenche_caminho_fw(origem, destino, vai_para, g, l);
+    return l;
+}
+
+lista ** caminhos_minimos_fw(lista **c, grafo g)
+{
+    //aloca estruturas e o vai_para
+    int ** vai_para = malloc( numero_vertices(g) * sizeof(int *));
+    for(int i = 0; i < numero_vertices(g); i++)
+    {
+        vai_para[i]=malloc(numero_vertices(g) * sizeof(int));
+        for(int j = 0; j < numero_vertices(g); j++)
+        {
+            if( i != j )
+                vai_para[i][j] = infinito;
+            if (i == j)
+                vai_para[i][j] = i;
+        }
+    }
+    long int ** d = malloc( numero_vertices(g) * sizeof(long int *));
+    for(int i = 0; i < numero_vertices(g); i++)
+    {
+        d[i]=malloc(numero_vertices(g) * sizeof(long int));
+    }
+    distancias_fw(d,g,vai_para);
+    //constroi o caminho
+    for(int i = 0; i < numero_vertices(g); i++)
+    {
+        for(int j = 0; j < numero_vertices(g); j++)
+        {
+            c[i][j] = constroi_caminho_minimo_fw(i,j,g,vai_para);
+        }
+    }
+    free(vai_para);
+    free(d);
+}
+
+lista **caminhos_minimos(lista **c, grafo g, char algoritmo)
+{
+    if(algoritmo=='d')
+    {
+        return caminhos_minimos_dijkstra(c,g);
+    }
+    else
+    {
+        return caminhos_minimos_fw(c,g);
+    }
 }

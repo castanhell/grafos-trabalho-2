@@ -719,6 +719,34 @@ static char* testValorDistanciaNaoDirecionadoComCicloCaminhosRedundantes()
     return 0;
 }
 
+static char* testValorCNaoDirecionadoComCicloCaminhosRedundantes()
+{
+    FILE *fp = fopen(pList[9].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    long int dist = distancia(vertice_nome("a",grf),vertice_nome("d",grf),grf);
+    sprintf(
+        msg, "Test 32 - Distancia simples failed - Filename: %s Expected: %d, Found: %d ",
+        pList[5].filename,
+        3,
+        dist
+    );
+    mu_assert(msg,3==dist);
+    lista caminhos = caminho_minimo(vertice_nome("a",grf),vertice_nome("c",grf),grf);
+     sprintf(
+        msg, "Test 32 - Tamanho lista failed - Filename: %s Expected: %d, Found: %d ",
+        pList[5].filename,
+        3,
+        tamanho_lista(caminhos)
+    );
+    mu_assert(msg,3==tamanho_lista(caminhos));
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    return 0;
+}
+
 static char* testMatrizDistanciasNaoDirecionadoPequeno()
 {
     FILE *fp = fopen(pList[5].filename,"r");
@@ -733,12 +761,33 @@ static char* testMatrizDistanciasNaoDirecionadoPequeno()
     }
     distancias(M,grf,'d');
     mu_assert("M[0][5] deveria ser 5",M[0][5]==5);
-    distancias(M,grf,'f');
+    distancias(M,grf,'a');
     mu_assert("M[0][5] deveria ser 5",M[0][5]==5);
     agclose(g);
     destroi_grafo(grf);
     fclose(fp);
     free(M);
+    return 0;
+}
+
+static char* testListaCaminhosGrafoNaoDirecionado()
+{
+    FILE *fp = fopen(pList[5].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    lista ** caminhos = malloc(numero_vertices(grf) * sizeof(lista*));
+    for(int j = 0; j < numero_vertices(grf) ; j++) {
+        caminhos[j] = malloc(numero_vertices(grf) * sizeof(lista));
+    }
+    caminhos_minimos(caminhos,grf,'d');
+    mu_assert("Dijkstra: M[0][5] deveria ser 5",tamanho_lista(caminhos[0][5])==6);
+    caminhos_minimos(caminhos,grf,'a');
+    mu_assert("FW : M[0][5] deveria ser 5",tamanho_lista(caminhos[0][5])==6);
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    free(caminhos);
     return 0;
 }
 
@@ -781,6 +830,7 @@ static char * all_tests()
     mu_run_test(testValorDistanciaNaoDirecionadoComCiclo);
     mu_run_test(testValorDistanciaNaoDirecionadoComCicloCaminhosRedundantes);
     mu_run_test(testMatrizDistanciasNaoDirecionadoPequeno);
+    mu_run_test(testListaCaminhosGrafoNaoDirecionado);
     return 0;
 }
 
