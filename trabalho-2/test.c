@@ -719,6 +719,8 @@ static char* testValorDistanciaNaoDirecionadoComCicloCaminhosRedundantes()
     return 0;
 }
 
+
+
 static char * all_tests()
 {
     mu_run_test(testGraphLoad);
