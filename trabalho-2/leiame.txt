@@ -1,0 +1,28 @@
+Trabalho 3 - Lucas Del Castanhel Dias
+
+Algumas observações:
+
+Encontrei bugs remanescentes do trabalho 2, em especial da função "caminhos_minimos",
+a qual não desalocava adequadamente a lista de elementos, resultando em um bug sério.
+
+Usei a seguinte referência para buscar os caminhos no algoritmo de floyd warshall:
+
+https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm
+
+Observação: Da forma que o trabalho foi implementado, um caminho mínimo retornado a partir do Dijkstra
+(do destino para a origem) é o inverso
+do caminho do Floyd Warshall (da origem para o destino). Como a especificação do exercício não dizia nada, era mais fácil
+proceder dessa forma, pois os passos de cada algoritmo tornam mais fácil retornar nessas ordens.
+
+Testei os seguintes casos para os algoritmos:
+
+- Grafo não direcionado conexo acíclico
+- Grafo não direcionado cíclico
+- Grafo não direcionado desconexo com 2 componentes
+- Grafo direcionado acíclico
+
+Os testes estão no github: https://github.com/castanhell/grafos-trabalho-2/tree/master/trabalho-2.
+
+Achei o exercício 109 da lista interessante e relacionado com o trabalho de que ele permite a conclusão que quando o grafo é
+exparso ( tem O(N) arestas ou menos) o algoritmo de Dijkstra é assintoticamente melhor que o Floyd Warshall para encontrar
+ os caminhos mínimos.

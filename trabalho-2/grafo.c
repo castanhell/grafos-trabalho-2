@@ -717,17 +717,19 @@ long int **distancias_fw(long int **d, grafo g, int **vai_para)
         vertice v = vertice_id(i,g);
         lista ars = v->arestas;
         //Vertices que não possuem arestas (isolados)
-        if(ars==NULL) {continue; }
+        if(ars==NULL)
+        {
+            continue;
+        }
         no ar = primeiro_no(ars);
         while(ar != NULL)
         {
             aresta * a = (aresta*) ar->conteudo;
-            d[i][a->destino->id] = a->peso;
+            int dst = a->origem->id == i ? a->destino->id : a->origem->id;
+            d[i][dst] = a->peso;
             ar = ar->proximo;
             if(vai_para)
-            {
-                vai_para[i][a->destino->id] = a->destino->id;
-            }
+                vai_para[i][dst] = dst;
         }
     }
 

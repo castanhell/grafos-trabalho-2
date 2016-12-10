@@ -915,6 +915,36 @@ static char* testMatrizDistanciasGrafoNaoDirecionado2Componentes()
     return 0;
 }
 
+static char* testMatrizDistanciasGrafoNaoDirecionadoCiclo()
+{
+    FILE *fp = fopen(pList[9].filename,"r");
+    grafo grf = le_grafo(fp);
+    rewind(fp);
+    Agraph_t *g = agread(fp, NULL);
+    lista ** caminhos = malloc(numero_vertices(grf) * sizeof(lista*));
+    for(int j = 0; j < numero_vertices(grf) ; j++)
+    {
+        caminhos[j] = malloc(numero_vertices(grf) * sizeof(lista));
+    }
+    caminhos_minimos(caminhos,grf,'a');
+    mu_assert("FW: M[6][10] deveria ser 1",tamanho_lista(caminhos[0][5])==1);
+    caminhos_minimos(caminhos,grf,'d');
+    mu_assert("FW : M[0][4] deveria ser 5",tamanho_lista(caminhos[0][2])==2);
+    no n = primeiro_no(caminhos[0][5]);
+    while(n != NULL)
+    {
+        vertice v = (vertice) conteudo(n);
+        printf("%s ", nome_vertice(v));
+        n = proximo_no(n);
+    }
+    printf("\n");
+    agclose(g);
+    destroi_grafo(grf);
+    fclose(fp);
+    free(caminhos);
+    return 0;
+}
+
 static char * all_tests()
 {
     mu_run_test(testGraphLoad);
@@ -960,6 +990,7 @@ static char * all_tests()
     mu_run_test(testDistanciaCaminhosGrafoDirecionado);
     mu_run_test(testDistanciaFWCaminhosGrafoDirecionado);
     mu_run_test(testMatrizDistanciasGrafoNaoDirecionado2Componentes);
+    mu_run_test(testMatrizDistanciasGrafoNaoDirecionadoCiclo);
     return 0;
 }
 
